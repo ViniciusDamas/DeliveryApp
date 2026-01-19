@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MVP — FlashLocal (Entrega Rápida)</title>
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar__inner">
+            <div class="brand" aria-label="FlashLocal">
+                <div class="brand__logo">
+                    <img src="./assets/logo/brand_logo.png" alt="Droppi logo" />    
+                </div>
+                <div class="brand__text">
+                    <div class="brand__name">Droppi</div>
+                    <div class="brand__tag">Entrega rápida • MVP</div>
+                </div>
+            </div>
+
+            <div class="topbar__center" id="topbarCenter">
+                <div class="search" role="search" aria-label="Buscar produtos">
+                    <span class="search__icon" aria-hidden="true">⌕</span>
+                    <input id="searchInput" class="search__input" type="text"
+                        placeholder="Buscar produtos (ex.: carregador, perfume, caderno)..." autocomplete="off"
+                        aria-label="Buscar produtos" />
+                    <button id="clearSearchBtn" class="btn btn--ghost btn--sm" type="button">Limpar</button>
+                </div>
+            </div>
+
+            <div class="topbar__right">
+                <div class="topbar__actions" id="topbarActions">
+                    <button id="openCartBtn" class="btn btn--primary" type="button" aria-label="Abrir carrinho">
+                        Carrinho
+                        <span id="cartCount" class="badge badge--dark" aria-label="Quantidade de itens no carrinho">0</span>
+                    </button>
+                </div>
+
+                <div id="userBox" class="userbox hidden" aria-label="Menu do usuario">
+                    <button id="userMenuBtn" class="iconbtn userbox__trigger" type="button" aria-haspopup="true"
+                        aria-expanded="false" aria-label="Abrir menu do usuario">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill="currentColor"
+                                d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.2 0-7.6 2.1-8 5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1c-.4-2.9-3.8-5-8-5Z" />
+                        </svg>
+                    </button>
+
+                    <div id="userMenu" class="userbox__menu" role="menu" aria-label="Opcoes do usuario">
+                        <div class="userbox__header">
+                            <div id="userRoleLabel" class="userbox__role">Cliente</div>
+                            <div id="userNameLabel" class="userbox__name">Usuario</div>
+                        </div>
+                        <button id="openOrdersBtn" class="userbox__item userbox__item--orders" type="button"
+                            role="menuitem">
+                            Pedidos
+                            <span id="ordersBadge" class="badge" aria-label="Quantidade de pedidos">0</span>
+                        </button>
+                        <button id="logoutBtn" class="userbox__item userbox__item--danger" type="button"
+                            role="menuitem">Sair</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery bar -->
+        <div class="deliverybar">
+            <div class="deliverybar__inner">
+                <div class="pill">
+                    <span class="pill__label">Área do piloto</span>
+                    <span class="pill__value" id="pilotArea">1–2 bairros</span>
+                </div>
+                <div class="pill">
+                    <span class="pill__label">SLA</span>
+                    <span class="pill__value" id="pilotSla">60–90 min</span>
+                </div>
+                <div class="pill">
+                    <span class="pill__label">Funcionamento</span>
+                    <span class="pill__value" id="pilotHours">10h–20h</span>
+                </div>
+
+                <div class="deliverybar__spacer"></div>
+
+                <button id="scopeBtn" class="btn btn--ghost btn--sm" type="button">Ajustar escopo (Fase 0)</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Views -->
+    <main class="views">
+        <!-- VIEW: Login Cliente -->
+        <section id="view-login-cliente" class="view hidden">
+            <div class="auth">
+                <div class="auth__panel">
+                    <div class="auth__badge">Cliente</div>
+                    <h1 class="auth__title">Login do Cliente</h1>
+                    <p class="auth__subtitle">Acesse o catalogo e acompanhe seus pedidos.</p>
+
+                    <form id="loginCustomerForm" class="form">
+                        <div class="form__row">
+                            <label class="field">
+                                <span>Nome</span>
+                                <input id="loginCustomerName" type="text" placeholder="Ex: Vini" />
+                            </label>
+                        </div>
+
+                        <div class="form__row">
+                            <label class="field">
+                                <span>WhatsApp</span>
+                                <input id="loginCustomerPhone" type="tel" placeholder="(11) 99999-9999" />
+                            </label>
+                        </div>
+
+                        <div class="form__row">
+                            <label class="field">
+                                <span>Email (opcional)</span>
+                                <input id="loginCustomerEmail" type="email" placeholder="voce@email.com" />
+                            </label>
+                        </div>
+
+                        <button id="loginCustomerBtn" class="btn btn--primary btn--wide" type="submit">Entrar</button>
+                    </form>
+
+                    <div class="auth__switch">
+                        <span>Entrar como:</span>
+                        <a href="#login-loja">Loja</a>
+                        <a href="#login-admin">Admin</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: Login Loja -->
+        <section id="view-login-loja" class="view hidden">
+            <div class="auth">
+                <div class="auth__panel">
+                    <div class="auth__badge">Loja</div>
+                    <h1 class="auth__title">Login da Loja</h1>
+                    <p class="auth__subtitle">Acompanhe pedidos, KPIs e status da operacao.</p>
+
+                    <form id="loginStoreForm" class="form">
+                        <div class="form__row">
+                            <label class="field">
+                                <span>Loja</span>
+                                <select id="loginStoreSelect"></select>
+                            </label>
+                        </div>
+
+                        <div class="form__row">
+                            <label class="field">
+                                <span>Operador</span>
+                                <input id="loginStoreOperator" type="text" placeholder="Nome do operador" />
+                            </label>
+                        </div>
+
+                        <div class="form__row">
+                            <label class="field">
+                                <span>Email</span>
+                                <input id="loginStoreEmail" type="email" placeholder="loja@email.com" />
+                            </label>
+                        </div>
+
+                        <button id="loginStoreBtn" class="btn btn--primary btn--wide" type="submit">Entrar</button>
+                    </form>
+
+                    <div class="auth__switch">
+                        <span>Entrar como:</span>
+                        <a href="#login-cliente">Cliente</a>
+                        <a href="#login-admin">Admin</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: Login Admin -->
+        <section id="view-login-admin" class="view hidden">
+            <div class="auth">
+                <div class="auth__panel">
+                    <div class="auth__badge">Admin</div>
+                    <h1 class="auth__title">Login do Admin</h1>
+                    <p class="auth__subtitle">Visao consolidada do piloto e controles gerais.</p>
+
+                    <form id="loginAdminForm" class="form">
+                        <div class="form__row">
+                            <label class="field">
+                                <span>Email</span>
+                                <input id="loginAdminEmail" type="email" placeholder="admin@email.com" />
+                            </label>
+                        </div>
+
+                        <div class="form__row">
+                            <label class="field">
+                                <span>Senha</span>
+                                <input id="loginAdminPass" type="password" placeholder="Sua senha" />
+                            </label>
+                        </div>
+
+                        <button id="loginAdminBtn" class="btn btn--primary btn--wide" type="submit">Entrar</button>
+                    </form>
+
+                    <div class="auth__switch">
+                        <span>Entrar como:</span>
+                        <a href="#login-cliente">Cliente</a>
+                        <a href="#login-loja">Loja</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: Cliente -->
+        <section id="view-cliente" class="view hidden">
+            <main class="layout layout--customer">
+                <aside class="sidebar">
+                    <div class="sidebar__section">
+                        <div class="sidebar__title">Categorias</div>
+                        <div id="categoryList" class="list" aria-label="Categorias"></div>
+                    </div>
+
+                    <div class="sidebar__section">
+                        <div class="sidebar__title">Lojas parceiras</div>
+                        <div id="storeList" class="list" aria-label="Lojas parceiras"></div>
+                    </div>
+                </aside>
+                <section class="content">
+                    <!-- Mantém o Hero -->
+                    <div class="hero">
+                        <div class="hero__text">
+                            <h1>Catálogo curado (piloto)</h1>
+                            <p>Menos ruptura, operação mais rápida. Selecione itens, feche pagamento e acompanhe o
+                                status.</p>
+                            <div class="hero__actions">
+                                <button id="viewMetricsBtn" class="btn btn--ghost" type="button">Ver métricas (Fase
+                                    7)</button>
+                                <button id="startDemoBtn" class="btn btn--primary" type="button">Fazer pedido
+                                    rápido</button>
+                            </div>
+                        </div>
+
+                        <div class="hero__card" aria-label="KPIs do piloto">
+                            <div class="kpi">
+                                <div class="kpi__label">Tempo médio (simulado)</div>
+                                <div class="kpi__value" id="kpiAvgTime">—</div>
+                            </div>
+                            <div class="kpi">
+                                <div class="kpi__label">Cancelamentos (simulado)</div>
+                                <div class="kpi__value" id="kpiCancel">—</div>
+                            </div>
+                            <div class="kpi">
+                                <div class="kpi__label">Ticket médio (simulado)</div>
+                                <div class="kpi__value" id="kpiTicket">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Toolbar + grid permanecem -->
+                    <div class="toolbar">
+                        <div class="toolbar__left">
+                            <div class="toolbar__title">Produtos</div>
+                            <div class="toolbar__subtitle" id="resultsHint">Mostrando catálogo completo</div>
+                        </div>
+
+                        <div class="toolbar__right">
+                            <label class="select">
+                                <span>Ordenar</span>
+                                <select id="sortSelect" aria-label="Ordenar produtos">
+                                    <option value="relevance">Relevância</option>
+                                    <option value="price_asc">Preço: menor → maior</option>
+                                    <option value="price_desc">Preço: maior → menor</option>
+                                    <option value="store">Loja</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="productGrid" class="grid" aria-label="Lista de produtos"></div>
+
+                    <!-- (Opcional) Regras do piloto agora como card abaixo -->
+                    <section class="card" style="margin-top: 16px;">
+                        <div class="sidebar__title" style="margin:0 0 10px;">Regras do piloto</div>
+                        <div class="note">
+                            <div class="note__row"><strong>Pedido guiado</strong> (Fase 2)</div>
+                            <div class="note__row"><strong>Aceite rápido</strong> (Fase 3)</div>
+                            <div class="note__row"><strong>Pagamento antes</strong> da coleta (Fase 4)</div>
+                            <div class="note__row"><strong>Status padronizado</strong> (Fase 6)</div>
+                            <div class="note__row"><strong>1 pedido = 1 loja</strong> (SLA)</div>
+                        </div>
+                    </section>
+                </section>
+            </main>
+
+        </section>
+
+        <!-- VIEW: Loja -->
+        <section id="view-loja" class="view hidden">
+            <div class="panel">
+                <div class="panel__head">
+                    <div>
+                        <h1 class="panel__title">Painel da Loja</h1>
+                        <div class="panel__subtitle">
+                            Use o filtro de loja no cliente (ou selecione abaixo) para ver métricas e pedidos.
+                        </div>
+                    </div>
+
+                    <div class="panel__actions">
+                        <label class="select">
+                            <span>Loja</span>
+                            <select id="storeSelectLoja"></select>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="storeKpis" class="grid grid--kpis"></div>
+
+                <div class="panel__section">
+                    <div class="panel__sectionTitle">Pedidos da loja</div>
+                    <div id="storeOrders" class="orders"></div>
+                </div>
+
+                <div class="panel__section">
+                    <div class="panel__sectionTitle">Top produtos (por quantidade)</div>
+                    <div id="storeTopProducts" class="toplist"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: Admin -->
+        <section id="view-admin" class="view hidden">
+            <div class="panel">
+                <div class="panel__head">
+                    <div>
+                        <h1 class="panel__title">Painel Admin</h1>
+                        <div class="panel__subtitle">Visão consolidada do piloto: volume, receita, status e performance.
+                        </div>
+                    </div>
+
+                    <div class="panel__actions">
+                        <button id="adminSeedDemo" class="btn btn--ghost" type="button">Gerar pedidos demo</button>
+                        <button id="adminClearAll" class="btn btn--danger" type="button">Zerar dados</button>
+                    </div>
+                </div>
+
+                <div id="adminKpis" class="grid grid--kpis"></div>
+
+                <div class="panel__section">
+                    <div class="panel__sectionTitle">Pedidos (todos)</div>
+                    <div id="adminOrders" class="orders"></div>
+                </div>
+
+                <div class="panel__section">
+                    <div class="panel__sectionTitle">Lojas (resumo)</div>
+                    <div id="adminStores" class="stores"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Overlay / Drawer / Modals (globais) -->
+    <div id="overlay" class="overlay hidden" aria-hidden="true"></div>
+
+    <!-- Drawer: Cart -->
+    <aside id="cartDrawer" class="drawer hidden" aria-label="Carrinho">
+        <div class="drawer__header">
+            <div>
+                <div class="drawer__title">Carrinho</div>
+                <div class="drawer__subtitle">Pedido guiado (Fase 2)</div>
+            </div>
+            <button id="closeCartBtn" class="iconbtn" type="button" aria-label="Fechar carrinho">✕</button>
+        </div>
+
+        <div class="drawer__body">
+            <div id="cartItems" class="cartitems" aria-label="Itens do carrinho"></div>
+
+            <div class="cartsummary">
+                <div class="cartsummary__row">
+                    <span>Subtotal</span>
+                    <strong id="subtotalValue">R$ 0,00</strong>
+                </div>
+                <div class="cartsummary__row">
+                    <span>Taxa de entrega (simulada)</span>
+                    <strong id="deliveryFeeValue">R$ 0,00</strong>
+                </div>
+                <div class="cartsummary__row cartsummary__row--total">
+                    <span>Total</span>
+                    <strong id="totalValue">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="form">
+                <div class="form__title">Endereço (obrigatório)</div>
+
+                <div class="form__row">
+                    <label class="field">
+                        <span>Nome</span>
+                        <input id="customerName" type="text" placeholder="Ex.: Vini" />
+                    </label>
+                </div>
+
+                <div class="form__row">
+                    <label class="field">
+                        <span>WhatsApp</span>
+                        <input id="customerPhone" type="tel" placeholder="(11) 99999-9999" />
+                    </label>
+                </div>
+
+                <div class="form__row">
+                    <label class="field">
+                        <span>Rua e número</span>
+                        <input id="addressLine1" type="text" placeholder="Av. Exemplo, 123" />
+                    </label>
+                </div>
+
+                <div class="form__row">
+                    <label class="field">
+                        <span>Bairro</span>
+                        <input id="addressDistrict" type="text" placeholder="Centro, Vila Nova, Jardins..." />
+                    </label>
+                </div>
+
+                <div class="form__row">
+                    <label class="field">
+                        <span>Complemento</span>
+                        <input id="addressExtra" type="text" placeholder="Apto, bloco, referência (opcional)" />
+                    </label>
+                </div>
+
+                <div class="form__title">Pagamento (antes da coleta) — Fase 4</div>
+                <div class="paymethods" aria-label="Métodos de pagamento">
+                    <label class="radio">
+                        <input type="radio" name="paymethod" value="pix" checked />
+                        <span>PIX</span>
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="paymethod" value="card" />
+                        <span>Cartão (simulado)</span>
+                    </label>
+                </div>
+
+                <div class="paybox">
+                    <div class="paybox__hint">
+                        <strong>Simulação:</strong> ao clicar em <em>“Pagar e enviar pedido”</em>, o pagamento é marcado
+                        como
+                        confirmado e o pedido avança para <strong>Aceito</strong>.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="drawer__footer">
+            <button id="clearCartBtn" class="btn btn--ghost" type="button">Limpar</button>
+            <button id="checkoutBtn" class="btn btn--primary" type="button">Pagar e enviar pedido</button>
+        </div>
+    </aside>
+
+    <!-- Modal: Orders -->
+    <section id="ordersModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Pedidos">
+        <div class="modal__panel">
+            <div class="modal__header">
+                <div>
+                    <div class="modal__title">Pedidos</div>
+                    <div class="modal__subtitle">Status padronizado (Fase 6)</div>
+                </div>
+                <button id="closeOrdersBtn" class="iconbtn" type="button" aria-label="Fechar">✕</button>
+            </div>
+
+            <div class="modal__body">
+                <div class="statuslegend">
+                    <span class="dot dot--received"></span><span>Recebido</span>
+                    <span class="dot dot--accepted"></span><span>Aceito</span>
+                    <span class="dot dot--paid"></span><span>Pago</span>
+                    <span class="dot dot--route"></span><span>Em rota</span>
+                    <span class="dot dot--done"></span><span>Entregue</span>
+                </div>
+                <div id="ordersList" class="orders"></div>
+            </div>
+
+            <div class="modal__footer">
+                <button id="simulateNextStepBtn" class="btn btn--ghost" type="button">Simular avanço de status</button>
+                <button id="resetOrdersBtn" class="btn btn--danger" type="button">Zerar histórico</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal: Scope -->
+    <section id="scopeModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Escopo do piloto">
+        <div class="modal__panel">
+            <div class="modal__header">
+                <div>
+                    <div class="modal__title">Fase 0 — Escopo do piloto</div>
+                    <div class="modal__subtitle">Defina limites claros para evitar caos operacional</div>
+                </div>
+                <button id="closeScopeBtn" class="iconbtn" type="button" aria-label="Fechar">✕</button>
+            </div>
+
+            <div class="modal__body">
+                <div class="form">
+                    <div class="form__row">
+                        <label class="field">
+                            <span>Área de atuação</span>
+                            <select id="scopeArea">
+                                <option value="1–2 bairros">1–2 bairros (recomendado)</option>
+                                <option value="3–5 bairros">3–5 bairros</option>
+                                <option value="cidade inteira">Cidade inteira (arriscado)</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="form__row">
+                        <label class="field">
+                            <span>Nicho âncora</span>
+                            <select id="scopeNiche">
+                                <option value="Acessórios de celular">Acessórios de celular</option>
+                                <option value="Perfumaria">Perfumaria</option>
+                                <option value="Papelaria">Papelaria</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="form__row">
+                        <label class="field">
+                            <span>Horário</span>
+                            <select id="scopeHours">
+                                <option value="10h–20h">10h–20h (recomendado)</option>
+                                <option value="09h–21h">09h–21h</option>
+                                <option value="08h–22h">08h–22h</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="form__row">
+                        <label class="field">
+                            <span>SLA</span>
+                            <select id="scopeSla">
+                                <option value="60–90 min">60–90 min (recomendado)</option>
+                                <option value="45–75 min">45–75 min</option>
+                                <option value="90–120 min">90–120 min</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="note">
+                        <strong>Critério:</strong> comece pequeno para aprender rápido. Escopo grande antes de validação
+                        tende a
+                        gerar frustração e perda de controle.
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal__footer">
+                <button id="applyScopeBtn" class="btn btn--primary" type="button">Aplicar</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./js/app.js"></script>
+</body>
+
+</html>
