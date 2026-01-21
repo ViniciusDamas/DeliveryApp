@@ -683,52 +683,105 @@ function filterProducts() {
   return list;
 }
 
-function productCard(p) {
+function createProductCardNode(p) {
   const store = getStoreById(p.storeId);
-  const img = p.image || PLACEHOLDER_IMG;
+  const imgSrc = p.image || PLACEHOLDER_IMG;
   const etaAvg =
     store && typeof store.etaMin === "number" && typeof store.etaMax === "number"
       ? Math.round((store.etaMin + store.etaMax) / 2)
       : null;
   const subline = etaAvg ? `~${etaAvg} min` : store ? `Entrega: ${money(store.deliveryFee || 0)}` : "";
-  const sublineHtml = subline ? `<div class="card__subline">${subline}</div>` : "";
   const pill = store?.niche || p.category;
 
-  const badgeHtml = p.badge ? `<span class="tag">${p.badge}</span>` : "";
+  const article = document.createElement("article");
+  article.className = "card card--product";
 
-  return `
-    <article class="card card--product">
-      <div class="card__imgwrap">
-        ${badgeHtml}
-        <img class="card__img" src="${img}" alt="${p.name}" onerror="this.src='${PLACEHOLDER_IMG}'" />
-      </div>
+  const imgWrap = document.createElement("div");
+  imgWrap.className = "card__imgwrap";
 
-      <div class="card__content">
-        <h3 class="card__title">${p.name}</h3>
+  if (p.badge) {
+    const badge = document.createElement("span");
+    badge.className = "tag";
+    badge.textContent = p.badge;
+    imgWrap.appendChild(badge);
+  }
 
-        <div class="card__meta">
-          <span>${p.category}</span>
-          <span class="muted">•</span>
-          <span>${store ? store.niche : "Loja"}</span>
-        </div>
+  const img = document.createElement("img");
+  img.className = "card__img";
+  img.src = imgSrc;
+  img.alt = p.name;
+  img.loading = "lazy";
+  img.decoding = "async";
+  img.width = 400;
+  img.height = 400;
+  img.onerror = () => {
+    img.src = PLACEHOLDER_IMG;
+  };
+  imgWrap.appendChild(img);
 
-        <div class="card__store">${store ? store.name : ""}</div>
-        <div class="card__pill">${pill}</div>
+  const content = document.createElement("div");
+  content.className = "card__content";
 
-        <div class="card__priceRow">
-          <div class="card__price">${money(p.price)}</div>
-          <button class="iconbtn iconbtn--sm iconbtn--ghost" type="button" data-save="${p.id}" aria-label="Salvar produto">
-            <span aria-hidden="true">&#128278;</span>
-          </button>
-        </div>
-        ${sublineHtml}
+  const title = document.createElement("h3");
+  title.className = "card__title";
+  title.textContent = p.name;
+  content.appendChild(title);
 
-        <button class="btn btn--primary btn--wide" type="button" data-add="${p.id}">
-          Adicionar
-        </button>
-      </div>
-    </article>
-  `;
+  const meta = document.createElement("div");
+  meta.className = "card__meta";
+  const metaCategory = document.createElement("span");
+  metaCategory.textContent = p.category;
+  const metaDot = document.createElement("span");
+  metaDot.className = "muted";
+  metaDot.textContent = "\u2022";
+  const metaNiche = document.createElement("span");
+  metaNiche.textContent = store ? store.niche : "Loja";
+  meta.append(metaCategory, metaDot, metaNiche);
+  content.appendChild(meta);
+
+  const storeLine = document.createElement("div");
+  storeLine.className = "card__store";
+  storeLine.textContent = store ? store.name : "";
+  content.appendChild(storeLine);
+
+  const pillEl = document.createElement("div");
+  pillEl.className = "card__pill";
+  pillEl.textContent = pill;
+  content.appendChild(pillEl);
+
+  const priceRow = document.createElement("div");
+  priceRow.className = "card__priceRow";
+  const price = document.createElement("div");
+  price.className = "card__price";
+  price.textContent = money(p.price);
+  const saveBtn = document.createElement("button");
+  saveBtn.className = "iconbtn iconbtn--sm iconbtn--ghost";
+  saveBtn.type = "button";
+  saveBtn.setAttribute("data-save", p.id);
+  saveBtn.setAttribute("aria-label", "Salvar produto");
+  const saveIcon = document.createElement("span");
+  saveIcon.setAttribute("aria-hidden", "true");
+  saveIcon.innerHTML = "&#128278;";
+  saveBtn.appendChild(saveIcon);
+  priceRow.append(price, saveBtn);
+  content.appendChild(priceRow);
+
+  if (subline) {
+    const sublineEl = document.createElement("div");
+    sublineEl.className = "card__subline";
+    sublineEl.textContent = subline;
+    content.appendChild(sublineEl);
+  }
+
+  const addBtn = document.createElement("button");
+  addBtn.className = "btn btn--primary btn--wide";
+  addBtn.type = "button";
+  addBtn.setAttribute("data-add", p.id);
+  addBtn.textContent = "Adicionar";
+  content.appendChild(addBtn);
+
+  article.append(imgWrap, content);
+  return article;
 }
 
 function rowTargetCount(list, min = 3, max = 6) {
@@ -886,9 +939,13 @@ function renderDiscoveryRows() {
 function renderProductGrid() {
   const perfId = PERF.markStart("renderProductGrid");
   const list = filterProducts();
-  const html = list.map(productCard).join("");
-  UI.productGrid.innerHTML = html;
-  PERF.track("renderProductGrid", { products: list.length, nodes: PERF.countNodes(html) });
+  const frag = document.createDocumentFragment();
+  list.forEach((product) => {
+    frag.appendChild(createProductCardNode(product));
+  });
+  UI.productGrid.replaceChildren(frag);
+  const nodes = PERF.enabled ? UI.productGrid.querySelectorAll("*").length : 0;
+  PERF.track("renderProductGrid", { products: list.length, nodes });
   PERF.markEnd("renderProductGrid", perfId);
 }
 
@@ -1268,5 +1325,6 @@ export function bindCustomerEvents() {
     toast("Métricas do piloto: veja Loja/Admin no topo.");
   });
 }
+
 
 

@@ -1900,6 +1900,9 @@ body[data-route="admin"] .userbox__item--orders {
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(15, 25, 48, 0.55);
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: 360px 520px;
+  contain: layout paint style;
 }
 
 .card.card--product:hover {
