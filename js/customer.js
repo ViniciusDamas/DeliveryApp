@@ -2,23 +2,21 @@
 // View do Cliente: catálogo + filtros + carrinho + pedidos (modal)
 
 // ...existing code...
-import { DATA, PLACEHOLDER_IMG } from "./data.js";
+import { PLACEHOLDER_IMG } from "./data.js";
 import { UI, show, hide, toast, debounce, money, uid, nowISO } from "./ui.js";
 // ...existing code...
 // CHANGED: import helper getters used throughout this module
-import { State, saveAllState, getProductById, getStoreById, getCategoryById } from "./storage.js";
+import { State, saveAllState, getProductById, getStoreById } from "./storage.js";
 // ...existing code...
 
 const ORDER_STEPS = ["received", "accepted", "paid", "route", "done"];
 
 function computeCategories() {
-  // se DATA.categories existir, usa ela (ordem e imagens controladas)
-  if (Array.isArray(DATA.categories) && DATA.categories.length) {
-    return DATA.categories;
+  if (Array.isArray(State.categories) && State.categories.length) {
+    return State.categories;
   }
 
-  // fallback: gera lista sem imagem
-  const set = new Set((DATA.products || []).map((p) => p.category));
+  const set = new Set((State.products || []).map((p) => p.category));
   const cats = Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
   const placeholder = PLACEHOLDER_IMG || "./assets/products/placeholder.jpg";
   return [{ id: "all", label: "Todas", image: placeholder }, ...cats.map((c) => ({ id: c, label: c, image: placeholder }))];
@@ -296,7 +294,7 @@ function renderStoresSidebar() {
       niche: "Catalogo completo",
       rating: null,
     },
-    ...DATA.stores.map((s) => ({
+    ...State.stores.map((s) => ({
       id: s.id,
       name: s.name,
       niche: s.niche,
@@ -344,7 +342,7 @@ function filterProducts() {
   const cat = State.filters.category;
   const store = State.filters.store;
 
-  let list = DATA.products.filter((p) => p.available);
+  let list = State.products.filter((p) => p.available);
 
   if (store !== "all") list = list.filter((p) => p.storeId === store);
   if (cat !== "all") list = list.filter((p) => p.category === cat);
@@ -671,7 +669,12 @@ export function bindCustomerEvents() {
   // Botões do hero (simples)
   UI.startDemoBtn?.addEventListener("click", () => {
     // adiciona 1 item aleatório pra acelerar o demo
-    const p = DATA.products[Math.floor(Math.random() * DATA.products.length)];
+    const list = State.products;
+    if (!list.length) {
+      toast("Nao ha produtos disponiveis.");
+      return;
+    }
+    const p = list[Math.floor(Math.random() * list.length)];
     addToCart(p.id);
     show(UI.overlay);
     show(UI.cartDrawer);

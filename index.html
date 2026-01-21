@@ -295,38 +295,135 @@
 
         <!-- VIEW: Loja -->
         <section id="view-loja" class="view hidden">
-            <div class="panel">
-                <div class="panel__head">
-                    <div>
-                        <h1 class="panel__title">Painel da Loja</h1>
-                        <div class="panel__subtitle">
-                            Use o filtro de loja no cliente (ou selecione abaixo) para ver métricas e pedidos.
+            <div class="store-shell">
+                <aside id="storeSidebar" class="store-sidebar">
+                    <div class="store-sidebar__head">
+                        <button id="storeSidebarToggle" class="iconbtn" type="button" aria-label="Expandir menu" aria-expanded="true">
+                            <span class="store-sidebar__icon" aria-hidden="true"></span>
+                        </button>
+                        <div class="store-sidebar__meta">
+                            <div class="store-sidebar__label">Painel da loja</div>
+                            <div id="storeSidebarName" class="store-sidebar__name">Loja</div>
                         </div>
                     </div>
 
-                    <div class="panel__actions">
-                        <label class="select">
-                            <span>Loja</span>
-                            <select id="storeSelectLoja"></select>
-                        </label>
-                    </div>
-                </div>
+                    <nav class="store-sidebar__nav" aria-label="Menu da loja">
+                        <button class="store-nav is-active" type="button" data-store-nav="overview" aria-controls="storeSection-overview">
+                            <span class="store-nav__dot" aria-hidden="true"></span>
+                            <span class="store-nav__text">Visao geral</span>
+                        </button>
+                        <button class="store-nav" type="button" data-store-nav="orders" aria-controls="storeSection-orders">
+                            <span class="store-nav__dot" aria-hidden="true"></span>
+                            <span class="store-nav__text">Pedidos</span>
+                        </button>
+                        <button class="store-nav" type="button" data-store-nav="products" aria-controls="storeSection-products">
+                            <span class="store-nav__dot" aria-hidden="true"></span>
+                            <span class="store-nav__text">Produtos</span>
+                        </button>
+                    </nav>
 
-                <div id="storeKpis" class="grid grid--kpis"></div>
+                    <div id="storeSidebarFooter" class="store-sidebar__footer"></div>
+                </aside>
 
-                <div class="panel__section">
-                    <div class="panel__sectionTitle">Pedidos da loja</div>
-                    <div id="storeOrders" class="orders"></div>
-                </div>
+                <div class="store-main">
+                    <section id="storeSection-overview" class="store-section is-active" data-store-section="overview">
+                        <div class="panel">
+                            <div class="panel__head">
+                                <div>
+                                    <h1 class="panel__title">Painel da Loja</h1>
+                                    <div class="panel__subtitle">Acompanhe KPIs e top produtos da sua loja.</div>
+                                </div>
 
-                <div class="panel__section">
-                    <div class="panel__sectionTitle">Top produtos (por quantidade)</div>
-                    <div id="storeTopProducts" class="toplist"></div>
+                                <div class="panel__actions">
+                                    <label class="select">
+                                        <span>Loja</span>
+                                        <select id="storeSelectLoja" disabled></select>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="storeKpis" class="grid grid--kpis"></div>
+
+                            <div class="panel__section">
+                                <div class="panel__sectionTitle">Top produtos (por quantidade)</div>
+                                <div id="storeTopProducts" class="toplist"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="storeSection-orders" class="store-section" data-store-section="orders">
+                        <div class="panel">
+                            <div class="panel__head">
+                                <div>
+                                    <h1 class="panel__title">Pedidos da loja</h1>
+                                    <div class="panel__subtitle">Historico e status dos pedidos recebidos.</div>
+                                </div>
+                            </div>
+
+                            <div id="storeOrders" class="orders"></div>
+                        </div>
+                    </section>
+
+                    <section id="storeSection-products" class="store-section" data-store-section="products">
+                        <div class="panel">
+                            <div class="panel__head">
+                                <div>
+                                    <h1 class="panel__title">Produtos da loja</h1>
+                                    <div class="panel__subtitle">Crie e gerencie apenas os produtos da sua loja.</div>
+                                </div>
+                            </div>
+
+                            <div class="panel__section">
+                                <div class="panel__sectionTitle">Novo produto</div>
+                                <form id="storeProductForm" class="form form--grid">
+                                    <label class="field field--full">
+                                        <span>Nome do produto</span>
+                                        <input id="storeProductName" type="text" placeholder="Ex: Carregador Turbo" />
+                                    </label>
+
+                                    <label class="field">
+                                        <span>Categoria</span>
+                                        <select id="storeProductCategory"></select>
+                                    </label>
+
+                                    <label class="field">
+                                        <span>Preco (R$)</span>
+                                        <input id="storeProductPrice" type="number" min="0" step="0.01" placeholder="0.00" />
+                                    </label>
+
+                                    <label class="field">
+                                        <span>Badge (opcional)</span>
+                                        <input id="storeProductBadge" type="text" placeholder="Ex: Destaque" />
+                                    </label>
+
+                                    <label class="field">
+                                        <span>Imagem (URL opcional)</span>
+                                        <input id="storeProductImage" type="text" placeholder="https://..." />
+                                    </label>
+
+                                    <label class="field field--full">
+                                        <span class="field__inline">
+                                            <input id="storeProductAvailable" type="checkbox" checked />
+                                            <span>Produto ativo</span>
+                                        </span>
+                                    </label>
+
+                                    <button id="storeProductSubmit" class="btn btn--primary btn--wide field--full" type="submit">
+                                        Criar produto
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="panel__section">
+                                <div class="panel__sectionTitle">Catalogo da loja</div>
+                                <div id="storeProductsList" class="productlist"></div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </section>
-
-        <!-- VIEW: Admin -->
+<!-- VIEW: Admin -->
         <section id="view-admin" class="view hidden">
             <div class="panel">
                 <div class="panel__head">

@@ -9,6 +9,7 @@ const LS_KEYS = {
   SCOPE: "fl_scope_v1",
   FILTERS: "fl_filters_v1",
   AUTH: "fl_auth_v1",
+  PRODUCTS: "fl_products_v1",
 };
 
 export const State = {
@@ -61,12 +62,14 @@ export function loadAllState() {
   const scope = safeParse(localStorage.getItem(LS_KEYS.SCOPE), null);
   const filters = safeParse(localStorage.getItem(LS_KEYS.FILTERS), null);
   const auth = safeParse(localStorage.getItem(LS_KEYS.AUTH), null);
+  const products = safeParse(localStorage.getItem(LS_KEYS.PRODUCTS), null);
 
   if (cart && Array.isArray(cart.items)) State.cart = cart;
   if (orders && Array.isArray(orders)) State.orders = orders;
   if (scope) State.scope = { ...State.scope, ...scope };
   if (filters) State.filters = { ...State.filters, ...filters };
   if (auth) State.auth = { ...State.auth, ...auth };
+  if (products && Array.isArray(products)) State.products = products;
 
   // limpeza: remove itens inválidos (baseado no conjunto atual de products)
   State.cart.items = State.cart.items.filter((it) => State.products.some((p) => p.id === it.productId));
@@ -76,7 +79,7 @@ export function loadAllState() {
   }
 
   // ensure collections are available (if DATA changed or localStorage had empties)
-  if (!Array.isArray(State.products) || State.products.length === 0) {
+  if (!Array.isArray(State.products)) {
     State.products = Array.isArray(DATA.products) ? [...DATA.products] : [];
   }
   if (!Array.isArray(State.stores) || State.stores.length === 0) {
@@ -85,6 +88,12 @@ export function loadAllState() {
   if (!Array.isArray(State.categories) || State.categories.length === 0) {
     State.categories = Array.isArray(DATA.categories) ? [...DATA.categories] : [];
   }
+
+  State.products = State.products.map((p) => ({
+    ...p,
+    available: p.available !== false,
+  }));
+  State.products = State.products.filter((p) => State.stores.some((s) => s.id === p.storeId));
 }
 
 export function saveAllState() {
@@ -93,6 +102,7 @@ export function saveAllState() {
   localStorage.setItem(LS_KEYS.SCOPE, JSON.stringify(State.scope));
   localStorage.setItem(LS_KEYS.FILTERS, JSON.stringify(State.filters));
   localStorage.setItem(LS_KEYS.AUTH, JSON.stringify(State.auth));
+  localStorage.setItem(LS_KEYS.PRODUCTS, JSON.stringify(State.products));
 }
 
 export function resetAllData() {
@@ -101,6 +111,7 @@ export function resetAllData() {
   localStorage.removeItem(LS_KEYS.SCOPE);
   localStorage.removeItem(LS_KEYS.FILTERS);
   localStorage.removeItem(LS_KEYS.AUTH);
+  localStorage.removeItem(LS_KEYS.PRODUCTS);
 
   // volta pro padrão em memória também
   State.cart = { items: [], storeId: null };

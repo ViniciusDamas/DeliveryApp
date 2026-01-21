@@ -14,6 +14,8 @@ const ROUTE_VIEWS = {
   "login-admin": "#view-login-admin",
 };
 
+let userBoxHomeParent = null;
+
 function baseRoute(route) {
   return route.startsWith("login-") ? route.replace("login-", "") : route;
 }
@@ -69,6 +71,14 @@ function updateUserBox(route) {
   }
 
   show(UI.userBox);
+}
+
+function syncUserBoxLocation(route) {
+  if (!UI.userBox) return;
+  if (!userBoxHomeParent) userBoxHomeParent = UI.userBox.parentElement;
+  const target = route === "loja" ? UI.storeSidebarFooter : userBoxHomeParent;
+  if (!target || UI.userBox.parentElement === target) return;
+  target.appendChild(UI.userBox);
 }
 
 function closeUserMenu() {
@@ -128,6 +138,7 @@ function showView(route) {
   setActiveViewLink(route);
   document.body.dataset.route = route;
   updateUserBox(route);
+  syncUserBoxLocation(route);
 
   // Render por rota
   if (route === "cliente") renderCustomer();
