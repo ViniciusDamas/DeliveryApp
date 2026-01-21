@@ -26,6 +26,8 @@ body {
 :root {
   --brand: #22c3a6;
   --brand-2: #35d2bb;
+  --accent: var(--brand);
+  --accent-soft: rgba(34, 195, 166, 0.18);
   --bg: #070b14;
   --panel: rgba(18, 31, 59, 0.45);
   --panel-2: rgba(18, 31, 59, 0.62);
@@ -417,7 +419,7 @@ body[data-route="cliente"].has-minicart .content {
 }
 
 .sidebar__section {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .sidebar__title {
@@ -456,9 +458,9 @@ body[data-route="cliente"].has-minicart .content {
 }
 
 .listbtn--active {
-  border-color: rgba(34, 195, 166, 0.65);
+  border-color: var(--accent, rgba(34, 195, 166, 0.65));
   background:
-    radial-gradient(500px 240px at 10% 0%, rgba(34, 195, 166, 0.14), transparent 60%),
+    radial-gradient(500px 240px at 10% 0%, var(--accent-soft, rgba(34, 195, 166, 0.14)), transparent 60%),
     rgba(18, 31, 59, 0.55);
 }
 
@@ -513,9 +515,9 @@ body[data-route="cliente"].has-minicart .content {
 }
 
 .chip--active {
-  border-color: rgba(34, 195, 166, 0.65);
+  border-color: var(--accent, rgba(34, 195, 166, 0.65));
   background:
-    radial-gradient(500px 240px at 10% 0%, rgba(34, 195, 166, 0.14), transparent 60%),
+    radial-gradient(500px 240px at 10% 0%, var(--accent-soft, rgba(34, 195, 166, 0.14)), transparent 60%),
     rgba(18, 31, 59, 0.55);
 }
 
@@ -528,7 +530,7 @@ body[data-route="cliente"].has-minicart .content {
   display: grid;
   grid-template-columns: 1fr 320px;
   gap: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 
 .hero__text {
@@ -598,7 +600,7 @@ body[data-route="cliente"].has-minicart .content {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .toolbar__title {
@@ -608,6 +610,61 @@ body[data-route="cliente"].has-minicart .content {
 .toolbar__subtitle {
   font-size: 12px;
   color: var(--muted-2);
+}
+
+.sectionhead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionhead__main {
+  display: grid;
+  gap: 4px;
+}
+
+.sectionhead__title {
+  font-weight: 950;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+
+.sectionhead__subtitle {
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+.sectionhead__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.sectionhead--bare .sectionhead__title {
+  position: relative;
+  padding-bottom: 6px;
+}
+
+.sectionhead--bare .sectionhead__title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 54px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent, #22c3a6), transparent);
+  opacity: 0.9;
+}
+
+.section-divider {
+  height: 2px;
+  border-radius: 999px;
+  margin: 18px 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), var(--accent-soft, rgba(34, 195, 166, 0.14)), rgba(255, 255, 255, 0.12), transparent);
+  opacity: 0.9;
 }
 
 .select {
@@ -620,13 +677,13 @@ body[data-route="cliente"].has-minicart .content {
 /* Discovery rows */
 .discovery {
   display: grid;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 18px;
+  margin-bottom: 0;
 }
 
 .discovery__row {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .discovery__title {
@@ -785,8 +842,8 @@ body[data-route="cliente"].has-minicart .content {
 }
 
 .btn--primary {
-  border-color: rgba(34, 195, 166, 0.45);
-  background: linear-gradient(135deg, rgba(34, 195, 166, 0.22), rgba(18, 31, 59, 0.42));
+  border-color: var(--accent, #22c3a6);
+  background: linear-gradient(135deg, var(--accent-soft, rgba(34, 195, 166, 0.22)), rgba(18, 31, 59, 0.42));
 }
 
 .btn--danger {
@@ -819,7 +876,7 @@ body[data-route="cliente"].has-minicart .content {
 .store-nav:focus-visible,
 .discovery-card:focus-visible,
 .userbox__item:focus-visible {
-  outline: 2px solid rgba(34, 195, 166, 0.8);
+  outline: 2px solid var(--accent, rgba(34, 195, 166, 0.8));
   outline-offset: 2px;
 }
 
@@ -1678,7 +1735,7 @@ body[data-route="admin"] .userbox__item--orders {
 }
 
 .btn--primary {
-  box-shadow: 0 14px 34px rgba(34, 195, 166, 0.22);
+  box-shadow: 0 14px 34px var(--accent-soft, rgba(34, 195, 166, 0.22));
 }
 
 .btn--primary:hover {
@@ -1861,13 +1918,13 @@ body[data-route="admin"] .userbox__item--orders {
 }
 
 .storebtn--active {
-  border-color: rgba(34, 195, 166, 0.65);
+  border-color: var(--accent, rgba(34, 195, 166, 0.65));
   background:
-    radial-gradient(650px 240px at 10% 0%, rgba(34, 195, 166, 0.18), transparent 60%),
+    radial-gradient(650px 240px at 10% 0%, var(--accent-soft, rgba(34, 195, 166, 0.18)), transparent 60%),
     rgba(18, 31, 59, 0.55);
   box-shadow:
-    0 14px 34px rgba(34, 195, 166, 0.14),
-    0 0 0 3px rgba(34, 195, 166, 0.10);
+    0 14px 34px var(--accent-soft, rgba(34, 195, 166, 0.14)),
+    0 0 0 3px var(--accent-soft, rgba(34, 195, 166, 0.10));
 }
 
 .storebtn[data-store="all"] .storebtn__name {

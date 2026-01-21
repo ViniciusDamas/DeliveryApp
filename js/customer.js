@@ -7,7 +7,55 @@ import { State, saveAllState, getProductById, getStoreById } from "./storage.js"
 
 const ORDER_STEPS = ["received", "accepted", "paid", "route", "done"];
 const nowServingLine = document.querySelector("#nowServingLine");
+const ACCENTS = {
+  default: "#22c3a6",
+  categories: {
+    cabos: "#6cc7df",
+    carregadores: "#79d6a1",
+    protecao: "#f2b36b",
+    perfumes: "#d48ee3",
+    cuidados: "#7ac9d3",
+    cadernos: "#e3b96c",
+    canetas: "#7da3f0",
+  },
+  stores: {
+    "loja-01": "#5bc7d9",
+    "loja-02": "#d78be0",
+    "loja-03": "#f0b86a",
+  },
+};
 let hasShownWelcome = false;
+
+function normalizeKey(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function hexToRgba(hex, alpha = 0.18) {
+  if (!hex || !hex.startsWith("#")) return `rgba(34, 195, 166, ${alpha})`;
+  const raw = hex.slice(1);
+  const full = raw.length === 3 ? raw.split("").map((c) => c + c).join("") : raw;
+  if (full.length !== 6) return `rgba(34, 195, 166, ${alpha})`;
+  const r = parseInt(full.slice(0, 2), 16);
+  const g = parseInt(full.slice(2, 4), 16);
+  const b = parseInt(full.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function applyAccent({ category, storeId }) {
+  const root = document.documentElement;
+  let accent = ACCENTS.default;
+  if (storeId && ACCENTS.stores[storeId]) {
+    accent = ACCENTS.stores[storeId];
+  } else {
+    const key = normalizeKey(category);
+    if (key && ACCENTS.categories[key]) accent = ACCENTS.categories[key];
+  }
+  root.style.setProperty("--accent", accent);
+  root.style.setProperty("--accent-soft", hexToRgba(accent, 0.18));
+}
 
 function computeCategories() {
   if (Array.isArray(State.categories) && State.categories.length) {
@@ -53,6 +101,12 @@ function cartEta() {
   const s = getStoreById(sid);
   if (!s) return null;
   return Math.round((s.etaMin + s.etaMax) / 2);
+}
+
+function applyAccentFromState() {
+  const storeId = State.filters.store !== "all" ? State.filters.store : cartStoreId();
+  const category = State.filters.category !== "all" ? State.filters.category : "";
+  applyAccent({ category, storeId });
 }
 
 function getSelectedPaymethod() {
@@ -511,7 +565,11 @@ function discoveryRow(title, items) {
   if (!items.length) return "";
   return `
     <section class="discovery__row">
-      <div class="discovery__title">${title}</div>
+      <div class="sectionhead sectionhead--bare">
+        <div class="sectionhead__main">
+          <div class="sectionhead__title">${title}</div>
+        </div>
+      </div>
       <div class="discovery__scroll">
         ${items.map(discoveryCard).join("")}
       </div>
@@ -618,6 +676,7 @@ function updateCartUI() {
   renderCartTotals();
   updateMiniCartBar();
   renderDiscoveryRows();
+  applyAccentFromState();
 }
 
 function flashAddFeedback(btn) {
@@ -723,6 +782,7 @@ function updateKpis() {
 export function renderCustomer() {
   // aplica valores de UI conforme filtros/scope
   renderScopeBar();
+  applyAccentFromState();
 
   if (UI.searchInput) UI.searchInput.value = State.filters.search || "";
   if (UI.sortSelect) UI.sortSelect.value = State.filters.sort || "relevance";
@@ -801,6 +861,7 @@ export function bindCustomerEvents() {
     renderCategories();
     renderProductGrid();
     renderDiscoveryRows();
+    applyAccentFromState();
   });
 
   // Lojas (delegação)
@@ -812,6 +873,7 @@ export function bindCustomerEvents() {
     renderStoresSidebar();
     renderProductGrid();
     renderDiscoveryRows();
+    applyAccentFromState();
   });
 
   // Cart open/close

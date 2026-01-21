@@ -216,12 +216,12 @@
             <main class="layout layout--customer">
                 <aside class="sidebar">
                     <div class="sidebar__section">
-                        <div class="sidebar__title">Categorias</div>
+                        <div class="sidebar__title sectionhead__title">Categorias</div>
                         <div id="categoryList" class="list" aria-label="Categorias"></div>
                     </div>
 
                     <div class="sidebar__section">
-                        <div class="sidebar__title">Lojas parceiras</div>
+                        <div class="sidebar__title sectionhead__title">Lojas parceiras</div>
                         <div id="storeList" class="list" aria-label="Lojas parceiras"></div>
                     </div>
                 </aside>
@@ -257,14 +257,16 @@
                         </div>
                     </div>
 
+                    <div class="section-divider"></div>
+
                     <!-- Toolbar + grid permanecem -->
-                    <div class="toolbar">
-                        <div class="toolbar__left">
-                            <div class="toolbar__title">Produtos</div>
-                            <div class="toolbar__subtitle" id="resultsHint">Mostrando catálogo completo</div>
+                    <div class="toolbar sectionhead">
+                        <div class="toolbar__left sectionhead__main">
+                            <div class="toolbar__title sectionhead__title">Produtos</div>
+                            <div class="toolbar__subtitle sectionhead__subtitle" id="resultsHint">Mostrando catálogo completo</div>
                         </div>
 
-                        <div class="toolbar__right">
+                        <div class="toolbar__right sectionhead__actions">
                             <label class="select">
                                 <span>Ordenar</span>
                                 <select id="sortSelect" aria-label="Ordenar produtos">
@@ -278,6 +280,8 @@
                     </div>
 
                     <div id="discoveryRows" class="discovery"></div>
+
+                    <div class="section-divider"></div>
 
                     <div id="productGrid" class="grid" aria-label="Lista de produtos"></div>
 
@@ -680,3 +684,4 @@
 </body>
 
 </html>
+
