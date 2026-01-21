@@ -320,7 +320,10 @@ body {
 }
 
 body[data-route="cliente"].has-minicart .views {
-  padding-bottom: 140px;
+  padding-bottom: 160px;
+}
+body[data-route="cliente"].has-minicart .content {
+  padding-bottom: 80px;
 }
 
 /* Auth views */
@@ -1602,6 +1605,9 @@ body[data-route="cliente"].has-minicart .views {
 
   .grid {
     grid-template-columns: 1fr;
+  }
+  .discovery__scroll {
+    grid-auto-columns: minmax(140px, 72vw);
   }
 
   .store-shell {
