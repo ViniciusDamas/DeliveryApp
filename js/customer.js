@@ -6,6 +6,8 @@ import { UI, show, hide, toast, debounce, money, uid, nowISO } from "./ui.js";
 import { State, saveAllState, getProductById, getStoreById } from "./storage.js";
 
 const ORDER_STEPS = ["received", "accepted", "paid", "route", "done"];
+const nowServingLine = document.querySelector("#nowServingLine");
+let hasShownWelcome = false;
 
 function computeCategories() {
   if (Array.isArray(State.categories) && State.categories.length) {
@@ -271,6 +273,9 @@ function renderScopeBar() {
   if (UI.pilotArea) UI.pilotArea.textContent = State.scope.area;
   if (UI.pilotHours) UI.pilotHours.textContent = State.scope.hours;
   if (UI.pilotSla) UI.pilotSla.textContent = State.scope.sla;
+  if (nowServingLine) {
+    nowServingLine.textContent = `Atendendo agora: ${State.scope.area} | Ativo: ${State.scope.hours}`;
+  }
 }
 
 function renderCategories() {
@@ -371,7 +376,9 @@ function filterProducts() {
   if (cat !== "all") hintParts.push(`Categoria: ${cat}`);
   if (q) hintParts.push(`Busca: "${q}"`);
 
-  UI.resultsHint.textContent = hintParts.length ? `Filtros: ${hintParts.join(" • ")}` : "Mostrando catálogo completo";
+  UI.resultsHint.textContent = hintParts.length
+    ? `Filtrado para você: ${hintParts.join(" - ")}`
+    : "Navegue com tranquilidade - entrega rápida na sua área.";
 
   return list;
 }
@@ -534,7 +541,7 @@ function renderDiscoveryRows() {
     const storeProducts = available.filter((p) => p.storeId === storeId);
     const storeTarget = rowTargetCount(storeProducts);
     if (storeTarget) {
-      rows.push(discoveryRow("Da sua loja seleconada", buildStoreRow(storeProducts, storeTarget)));
+      rows.push(discoveryRow("Da sua loja selecionada", buildStoreRow(storeProducts, storeTarget)));
     }
   }
 
@@ -719,6 +726,11 @@ export function renderCustomer() {
 
   if (UI.searchInput) UI.searchInput.value = State.filters.search || "";
   if (UI.sortSelect) UI.sortSelect.value = State.filters.sort || "relevance";
+
+  if (!hasShownWelcome) {
+    toast(`Welcome back. Deliveries active until ${State.scope.hours}.`);
+    hasShownWelcome = true;
+  }
 
   renderCategories();
   renderStoresSidebar();
