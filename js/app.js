@@ -165,6 +165,7 @@ function initGlobalOverlayBehavior() {
     hide(UI.cartDrawer);
     hide(UI.ordersModal);
     hide(UI.scopeModal);
+    hide(UI.filtersDrawer);
     hide(UI.overlay);
   });
 }

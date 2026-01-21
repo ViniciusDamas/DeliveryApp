@@ -1023,7 +1023,8 @@ function renderCartTotals() {
 function updateMiniCartBar() {
   if (!UI.miniCartBar) return;
   const count = cartCount();
-  const shouldShow = count > 0 && document.body.dataset.route === "cliente";
+  const cartClosed = !UI.cartDrawer || UI.cartDrawer.classList.contains("hidden");
+  const shouldShow = count > 0 && document.body.dataset.route === "cliente" && cartClosed;
 
   document.body.classList.toggle("has-minicart", shouldShow);
 
@@ -1185,6 +1186,17 @@ export function bindCustomerEvents() {
     show(UI.cartDrawer);
     updateCartUI();
   };
+  const openFilters = () => {
+    show(UI.overlay);
+    show(UI.filtersDrawer);
+    requestAnimationFrame(() => {
+      syncSectionHeights();
+    });
+  };
+  const closeFilters = () => {
+    hide(UI.filtersDrawer);
+    hide(UI.overlay);
+  };
 
   // Search
   UI.searchInput?.addEventListener(
@@ -1321,6 +1333,21 @@ export function bindCustomerEvents() {
   UI.closeCartBtn?.addEventListener("click", () => {
     hide(UI.cartDrawer);
     hide(UI.overlay);
+    updateMiniCartBar();
+  });
+
+  UI.openFiltersBtn?.addEventListener("click", openFilters);
+  UI.closeFiltersBtn?.addEventListener("click", closeFilters);
+
+  UI.overlay?.addEventListener("click", () => {
+    updateMiniCartBar();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (UI.filtersDrawer && !UI.filtersDrawer.classList.contains("hidden")) {
+      closeFilters();
+    }
   });
 
   // Cart qty buttons (delegação)

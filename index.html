@@ -220,7 +220,13 @@
         <!-- VIEW: Cliente -->
         <section id="view-cliente" class="view hidden">
             <main class="layout layout--customer">
-                <aside class="sidebar">
+                <aside id="filtersDrawer" class="drawer drawer--left hidden" aria-label="Filtros">
+                    <div class="drawer__header filters-drawer__header">
+                        <div class="drawer__title">Filtros</div>
+                        <button id="closeFiltersBtn" class="iconbtn" type="button" aria-label="Fechar filtros">X</button>
+                    </div>
+                    <div class="drawer__body filters-drawer__body">
+                        <aside class="sidebar">
                     <div class="sidebar__section" data-collapsible="categories">
                         <button id="toggleCategories" class="section-toggle" type="button" aria-expanded="true">
                             <span class="section-toggle__title">Categorias</span>
@@ -243,6 +249,8 @@
                             </label>
                             <div id="storeList" class="list" aria-label="Lojas parceiras"></div>
                         </div>
+                    </div>
+                        </aside>
                     </div>
                 </aside>
                 <section class="content">
@@ -287,6 +295,9 @@
                         </div>
 
                         <div class="toolbar__right sectionhead__actions">
+                            <button id="openFiltersBtn" class="btn btn--ghost btn--sm toolbar__filters" type="button">
+                                Filtros
+                            </button>
                             <div class="dropdown" id="sortDropdown">
                                 <span>Ordenar</span>
                                 <button id="sortDropdownBtn" class="dropdown__btn" type="button" aria-haspopup="listbox"

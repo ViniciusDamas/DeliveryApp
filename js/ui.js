@@ -53,6 +53,9 @@ export const UI = {
   sortDropdownMenu: document.querySelector("#sortDropdownMenu"),
   sortDropdownLabel: document.querySelector("#sortDropdownLabel"),
   sortDropdownOptions: document.querySelectorAll("#sortDropdownMenu .dropdown__option"),
+  openFiltersBtn: document.querySelector("#openFiltersBtn"),
+  filtersDrawer: document.querySelector("#filtersDrawer"),
+  closeFiltersBtn: document.querySelector("#closeFiltersBtn"),
 
   // KPI
   kpiAvgTime: document.querySelector("#kpiAvgTime"),
