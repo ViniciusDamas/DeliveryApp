@@ -1,4 +1,4 @@
-// js/admin.js
+﻿// js/admin.js
 // Admin: KPIs consolidados + pedidos + resumo por loja + seed demo
 
 import { DATA, getStoreById } from "./data.js";
@@ -27,7 +27,7 @@ function renderAdminKpis() {
   UI.adminKpis.innerHTML = [
     kpiCard("Pedidos", String(count)),
     kpiCard("Receita (simulada)", money(revenue)),
-    kpiCard("Ticket médio", count ? money(ticket) : "—"),
+    kpiCard("Ticket médio", count ? money(ticket) : "-"),
     kpiCard("Entregues / Em andamento", `${delivered} / ${inProgress}`),
   ].join("");
 }
@@ -36,7 +36,7 @@ function orderRowAdmin(o) {
   const dt = new Date(o.createdAt);
   const when = dt.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
   const items = (o.items || []).map((it) => `${it.qty}× ${it.name}`).join(", ");
-  const status = ["Recebido", "Aceito", "Pago", "Em rota", "Entregue"][o.statusIndex] || "—";
+  const status = ["Recebido", "Aceito", "Pago", "Em rota", "Entregue"][o.statusIndex] || "-";
 
   return `
     <div class="order">
@@ -104,7 +104,7 @@ function renderAdminStores() {
           <div class="storebtn__meta">
             <span>Entregues: ${r.delivered}</span>
             <span class="muted">•</span>
-            <span>Ticket: ${r.orders ? money(r.ticket) : "—"}</span>
+            <span>Ticket: ${r.orders ? money(r.ticket) : "-"}</span>
             <span class="muted">•</span>
             <span>⭐ ${r.store.rating.toFixed(1)}</span>
           </div>
@@ -186,3 +186,4 @@ export function bindAdminEvents() {
   UI.adminSeedDemo?.addEventListener("click", seedDemoOrders);
   UI.adminClearAll?.addEventListener("click", clearAll);
 }
+

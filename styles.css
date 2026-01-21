@@ -1,4 +1,4 @@
-/* ============================================================================
+﻿/* ============================================================================
   FlashLocal MVP - styles.css (BASE + PATCH)
 ============================================================================ */
 
@@ -22,7 +22,7 @@ body {
     #070b14;
 }
 
-/* Variáveis */
+/* VariÃ¡veis */
 :root {
   --brand: #22c3a6;
   --brand-2: #35d2bb;
@@ -136,8 +136,8 @@ body {
 }
 
 .brand__logo img {
-  width: 100%;
-  height: 100%;
+  width: 150%;
+  height: 150%;
   object-fit: contain;
   display: block;
 }
@@ -190,17 +190,28 @@ body {
   grid-template-columns: 24px 1fr auto;
   gap: 8px;
   align-items: center;
-  padding: 10px 12px;
+  padding: 0 12px;
+  height: 40px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(18, 31, 59, 0.40);
   min-width: 0;
+  transition: border-color .14s ease, box-shadow .14s ease, background .14s ease;
+}
+
+.search:focus-within {
+  border-color: rgba(34, 195, 166, 0.5);
+  box-shadow: 0 0 0 3px rgba(34, 195, 166, 0.12);
 }
 
 .search__icon {
   opacity: .8;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
 }
 
 .search__input {
@@ -210,6 +221,8 @@ body {
   color: rgba(255, 255, 255, 0.92);
   font-size: 13px;
   min-width: 0;
+  height: 100%;
+  line-height: 1;
 }
 
 .search__input::placeholder {
@@ -363,6 +376,7 @@ body {
 body[data-route="cliente"].has-minicart .views {
   padding-bottom: 160px;
 }
+
 body[data-route="cliente"].has-minicart .content {
   padding-bottom: 80px;
 }
@@ -595,6 +609,7 @@ body[data-route="cliente"].has-minicart .content {
   font-size: var(--text-md);
   line-height: 1.55;
 }
+
 .hero__now {
   margin: 0 0 12px;
   font-size: var(--text-sm);
@@ -800,6 +815,125 @@ body[data-route="cliente"].has-minicart .content {
   color: var(--muted-2);
 }
 
+.select__native {
+  display: none;
+}
+
+.dropdown {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted-2);
+  position: relative;
+}
+
+.dropdown__btn {
+  border-radius: 14px;
+  width: 250px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(20, 33, 60, 0.72), rgba(12, 22, 42, 0.85));
+  color: rgba(255, 255, 255, 0.92);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color .14s ease, box-shadow .14s ease, background .14s ease;
+}
+
+.dropdown__btn:hover {
+  border-color: rgba(34, 195, 166, 0.45);
+}
+
+.dropdown__btn:focus-visible {
+  outline: 2px solid var(--accent, rgba(34, 195, 166, 0.8));
+  outline-offset: 2px;
+}
+
+.dropdown__chev {
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid rgba(255, 255, 255, 0.72);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.72);
+  transform: rotate(45deg);
+  transition: transform .18s ease;
+}
+
+.dropdown__btn[aria-expanded="true"] .dropdown__chev {
+  transform: rotate(-135deg);
+}
+
+.dropdown__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  width: 250px;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    radial-gradient(450px 200px at 20% 0%, rgba(34, 195, 166, 0.14), transparent 60%),
+    rgba(6, 10, 20, 0.94);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+}
+
+.dropdown__option {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(18, 31, 59, 0.35);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: background .14s ease, border-color .14s ease, transform .06s ease;
+}
+
+.dropdown__option:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dropdown__option:active {
+  transform: translateY(1px);
+}
+
+.dropdown__option[aria-selected="true"] {
+  border-color: var(--accent, rgba(34, 195, 166, 0.6));
+  background:
+    radial-gradient(500px 240px at 10% 0%, var(--accent-soft, rgba(34, 195, 166, 0.14)), transparent 60%),
+    rgba(18, 31, 59, 0.55);
+}
+
+.dropdown__check {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  color: var(--accent, #22c3a6);
+  opacity: 0;
+  transition: opacity .14s ease;
+}
+
+.dropdown__option[aria-selected="true"] .dropdown__check {
+  opacity: 1;
+}
+
+.dropdown__option:focus-visible {
+  outline: 2px solid var(--accent, rgba(34, 195, 166, 0.8));
+  outline-offset: 2px;
+}
+
 /* Discovery rows */
 .discovery {
   display: grid;
@@ -985,7 +1119,21 @@ body[data-route="cliente"].has-minicart .content {
 }
 
 .btn--ghost {
-  background: rgba(18, 31, 59, 0.25);
+  background: rgba(18, 31, 59, 0.22);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+.search .btn--ghost {
+  height: 100%;
+  padding: 0 10px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.search .btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .btn--primary {
@@ -1038,12 +1186,14 @@ body[data-route="cliente"].has-minicart .content {
   cursor: pointer;
   transition: background .14s ease, border-color .14s ease, transform .06s ease;
 }
+
 .iconbtn--sm {
   width: 30px;
   height: 30px;
   border-radius: 10px;
   font-size: var(--text-xs);
 }
+
 .iconbtn--ghost {
   background: rgba(18, 31, 59, 0.28);
   border-color: rgba(255, 255, 255, 0.10);
@@ -1831,6 +1981,7 @@ body[data-route="cliente"].has-minicart .content {
   .grid {
     grid-template-columns: 1fr;
   }
+
   .discovery__scroll {
     grid-auto-columns: minmax(140px, 72vw);
   }
@@ -1896,7 +2047,7 @@ body[data-route="admin"] .userbox__item--orders {
 ============================================================================ */
 
 /* =========================
-   1) Botões: melhorar “toque/click”
+   1) BotÃµes: melhorar â€œtoque/clickâ€
    ========================= */
 .btn {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
@@ -1914,7 +2065,7 @@ body[data-route="admin"] .userbox__item--orders {
   transform: translateY(0) scale(0.99);
 }
 
-/* Botão amplo (para cards) */
+/* BotÃ£o amplo (para cards) */
 .btn--wide {
   width: 100%;
   border-radius: 14px;
@@ -1949,7 +2100,7 @@ body[data-route="admin"] .userbox__item--orders {
   transform: translateY(-1px) scale(0.99);
 }
 
-/* Área da imagem */
+/* Ãrea da imagem */
 .card__imgwrap {
   position: relative;
   width: 100%;
@@ -1993,7 +2144,7 @@ body[data-route="admin"] .userbox__item--orders {
   box-shadow: 0 12px 26px rgba(34, 195, 166, 0.18);
 }
 
-/* Conteúdo centralizado */
+/* ConteÃºdo centralizado */
 .card__content {
   padding: 14px 14px 16px;
   text-align: center;
@@ -2065,14 +2216,14 @@ body[data-route="admin"] .userbox__item--orders {
 }
 
 /* =========================
-   3) Grid: espaçamento mais “respirável”
+   3) Grid: espaÃ§amento mais â€œrespirÃ¡velâ€
    ========================= */
 .grid {
   gap: 16px;
 }
 
 /* =========================
-   4) Sidebar: lojas parceiras como “cards clicáveis” melhores
+   4) Sidebar: lojas parceiras como â€œcards clicÃ¡veisâ€ melhores
    ========================= */
 .stores {
   display: grid;
@@ -2133,4 +2284,3 @@ body[data-route="admin"] .userbox__item--orders {
 }
 
 /* (Former discovery/tiles styles removed in favor of sidebar lists) */
-

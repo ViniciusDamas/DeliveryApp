@@ -1,4 +1,4 @@
-// js/customer.js
+﻿// js/customer.js
 // View do Cliente: catálogo + filtros + carrinho + pedidos (modal)
 
 import { PLACEHOLDER_IMG } from "./data.js";
@@ -321,6 +321,28 @@ function applyAccentFromState() {
   applyAccent({ category, storeId });
 }
 
+function syncSortDropdown() {
+  if (!UI.sortSelect) return;
+  const value = State.filters.sort || UI.sortSelect.value || "relevance";
+  UI.sortSelect.value = value;
+
+  const option = Array.from(UI.sortSelect.options || []).find((opt) => opt.value === value);
+  if (UI.sortDropdownLabel && option) UI.sortDropdownLabel.textContent = option.textContent;
+
+  if (UI.sortDropdownOptions && UI.sortDropdownOptions.length) {
+    UI.sortDropdownOptions.forEach((btn) => {
+      btn.setAttribute("aria-selected", btn.dataset.value === value ? "true" : "false");
+    });
+  }
+}
+
+function setSortDropdownOpen(open) {
+  if (!UI.sortDropdownBtn || !UI.sortDropdownMenu) return;
+  UI.sortDropdownBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  if (open) show(UI.sortDropdownMenu);
+  else hide(UI.sortDropdownMenu);
+}
+
 function getSelectedPaymethod() {
   const checked = Array.from(UI.paymethodRadios || []).find((r) => r.checked);
   return checked?.value || "pix";
@@ -503,7 +525,7 @@ function simulateAdvanceOrders() {
     toast("Não há pedidos.");
     return;
   }
-  // avança o pedido mais recente que não terminou
+
   const idx = State.orders.findIndex((o) => o.statusIndex < ORDER_STEPS.length - 1);
   if (idx === -1) {
     toast("Todos os pedidos já estão entregues.");
@@ -637,7 +659,7 @@ function sortProducts(list) {
   if (s === "price_asc") return [...list].sort(byPriceAsc);
   if (s === "price_desc") return [...list].sort(byPriceDesc);
   if (s === "store") return [...list].sort(byStore);
-  return list; // relevance (do jeito que está)
+  return list;
 }
 
 function getProductCacheKey({ search, category, store, sort }) {
@@ -1015,7 +1037,7 @@ function updateMiniCartBar() {
   if (UI.miniCartTotal) UI.miniCartTotal.textContent = money(cartTotal());
 
   const eta = cartEta();
-  if (UI.miniCartEta) UI.miniCartEta.textContent = eta ? `${eta} min` : "—";
+  if (UI.miniCartEta) UI.miniCartEta.textContent = eta ? `${eta} min` : "-";
 
   show(UI.miniCartBar);
 }
@@ -1106,13 +1128,12 @@ function updateKpis() {
   // simples, baseado nos dados existentes (simulado)
   const orders = State.orders;
   if (orders.length === 0) {
-    UI.kpiAvgTime.textContent = "—";
-    UI.kpiCancel.textContent = "—";
-    UI.kpiTicket.textContent = "—";
+    UI.kpiAvgTime.textContent = "-";
+    UI.kpiCancel.textContent = "-";
+    UI.kpiTicket.textContent = "-";
     return;
   }
 
-  // tempo médio: usa ETA médio da loja (simulação)
   const avgEta = Math.round(
     orders.reduce((acc, o) => {
       const s = getStoreById(o.storeId);
@@ -1140,6 +1161,7 @@ export function renderCustomer() {
   if (UI.searchInput) UI.searchInput.value = State.filters.search || "";
   if (UI.sortSelect) UI.sortSelect.value = State.filters.sort || "relevance";
   if (UI.storeSearchInput) UI.storeSearchInput.value = State.filters.storeSearch || "";
+  syncSortDropdown();
 
   if (!hasShownWelcome) {
     toast(`Welcome back. Deliveries active until ${State.scope.hours}.`);
@@ -1189,10 +1211,40 @@ export function bindCustomerEvents() {
     PERF.startAction("sort change");
     State.filters.sort = e.target.value;
     saveAllState();
+    syncSortDropdown();
+    setSortDropdownOpen(false);
     scheduleRender({ grid: true, rows: true });
   });
 
-  // Clicks no grid (delegação)
+  UI.sortDropdownBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = UI.sortDropdownBtn.getAttribute("aria-expanded") === "true";
+    setSortDropdownOpen(!isOpen);
+  });
+
+  UI.sortDropdownMenu?.addEventListener("click", (e) => {
+    const option = e.target.closest("[data-value]");
+    if (!option) return;
+    PERF.startAction("sort change");
+    State.filters.sort = option.dataset.value;
+    saveAllState();
+    syncSortDropdown();
+    setSortDropdownOpen(false);
+    scheduleRender({ grid: true, rows: true });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!UI.sortDropdown || !UI.sortDropdownMenu || !UI.sortDropdownBtn) return;
+    if (UI.sortDropdownBtn.getAttribute("aria-expanded") !== "true") return;
+    if (!UI.sortDropdown.contains(e.target)) setSortDropdownOpen(false);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    setSortDropdownOpen(false);
+  });
+
+  // Clicks no grid (delegaÃ§Ã£o)
   UI.productGrid?.addEventListener("click", (e) => {
     const saveBtn = e.target.closest("[data-save]");
     if (saveBtn) {
@@ -1338,6 +1390,8 @@ export function bindCustomerEvents() {
     toast("Métricas do piloto: veja Loja/Admin no topo.");
   });
 }
+
+
 
 
 

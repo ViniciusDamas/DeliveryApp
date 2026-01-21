@@ -169,6 +169,31 @@ function initGlobalOverlayBehavior() {
   });
 }
 
+function hasMojibake(text) {
+  if (!text) return false;
+  return /Ã|â€”|Â/.test(text);
+}
+
+function guardMojibakeOnBoot() {
+  const guardKey = "fl_mojibake_reset";
+  if (sessionStorage.getItem(guardKey) === "1") return false;
+
+  const samples = [
+    document.title,
+    document.querySelector(".brand__name")?.textContent,
+    document.querySelector(".brand__tag")?.textContent,
+    document.querySelector("#sortDropdownLabel")?.textContent,
+  ];
+
+  if (!samples.some(hasMojibake)) return false;
+
+  console.warn("[FlashLocal] Mojibake detectado. Resetando estado persistido para evitar dados corrompidos.");
+  sessionStorage.setItem(guardKey, "1");
+  resetAllData();
+  location.reload();
+  return true;
+}
+
 function handleCustomerLogin(e) {
   e.preventDefault();
   const name = (UI.loginCustomerName?.value || "").trim();
@@ -238,6 +263,7 @@ function handleLogout() {
 }
 
 function init() {
+  if (guardMojibakeOnBoot()) return;
   loadAllState();
 
   // garante UI fechada

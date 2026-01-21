@@ -1,10 +1,11 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-br">
 
 <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MVP — FlashLocal (Entrega Rápida)</title>
+    <title>MVP - Droppi (Entrega Rápida)</title>
     <link rel="stylesheet" href="./styles.css" />
 </head>
 
@@ -60,7 +61,8 @@
                             Pedidos
                             <span id="ordersBadge" class="badge" aria-label="Quantidade de pedidos">0</span>
                         </button>
-                        <button id="fxToggleBtn" class="userbox__item" type="button" role="menuitem" aria-pressed="true">
+                        <button id="fxToggleBtn" class="userbox__item" type="button" role="menuitem"
+                            aria-pressed="true">
                             Efeitos reduzidos
                             <span id="fxToggleBadge" class="badge badge--dark" aria-label="Estado de efeitos">On</span>
                         </button>
@@ -244,7 +246,6 @@
                     </div>
                 </aside>
                 <section class="content">
-                    <!-- MantǸm o Hero -->
                     <div class="hero">
                         <div class="hero__text">
                             <h1>Catálogo curado (piloto)</h1>
@@ -286,15 +287,43 @@
                         </div>
 
                         <div class="toolbar__right sectionhead__actions">
-                            <label class="select">
+                            <div class="dropdown" id="sortDropdown">
                                 <span>Ordenar</span>
-                                <select id="sortSelect" aria-label="Ordenar produtos">
+                                <button id="sortDropdownBtn" class="dropdown__btn" type="button" aria-haspopup="listbox"
+                                    aria-expanded="false">
+                                    <span id="sortDropdownLabel">Relevância</span>
+                                    <span class="dropdown__chev" aria-hidden="true"></span>
+                                </button>
+                                <div id="sortDropdownMenu" class="dropdown__menu hidden" role="listbox"
+                                    aria-label="Ordenar produtos">
+                                    <button class="dropdown__option" type="button" role="option" data-value="relevance"
+                                        aria-selected="true">
+                                        <span class="dropdown__text">Relevância</span>
+                                        <span class="dropdown__check" aria-hidden="true">OK</span>
+                                    </button>
+                                    <button class="dropdown__option" type="button" role="option" data-value="price_asc"
+                                        aria-selected="false">
+                                        <span class="dropdown__text">Preço: menor para maior</span>
+                                        <span class="dropdown__check" aria-hidden="true">OK</span>
+                                    </button>
+                                    <button class="dropdown__option" type="button" role="option" data-value="price_desc"
+                                        aria-selected="false">
+                                        <span class="dropdown__text">Preço: maior para menor</span>
+                                        <span class="dropdown__check" aria-hidden="true">OK</span>
+                                    </button>
+                                    <button class="dropdown__option" type="button" role="option" data-value="store"
+                                        aria-selected="false">
+                                        <span class="dropdown__text">Loja</span>
+                                        <span class="dropdown__check" aria-hidden="true">OK</span>
+                                    </button>
+                                </div>
+                                <select id="sortSelect" class="select__native" aria-hidden="true" tabindex="-1">
                                     <option value="relevance">Relevância</option>
-                                    <option value="price_asc">Preço: menor → maior</option>
-                                    <option value="price_desc">Preço: maior → menor</option>
+                                    <option value="price_asc">Preço: menor para maior</option>
+                                    <option value="price_desc">Preço: maior para menor</option>
                                     <option value="store">Loja</option>
                                 </select>
-                            </label>
+                            </div>
                         </div>
                     </div>
 
@@ -344,7 +373,7 @@
                         <button class="store-nav is-active" type="button" data-store-nav="overview"
                             aria-controls="storeSection-overview">
                             <span class="store-nav__dot" aria-hidden="true"></span>
-                            <span class="store-nav__text">Visão geral</span>
+                            <span class="store-nav__text">VisÃ£o geral</span>
                         </button>
                         <button class="store-nav" type="button" data-store-nav="orders"
                             aria-controls="storeSection-orders">
@@ -423,7 +452,7 @@
                                     </label>
 
                                     <label class="field">
-                                        <span>Preco (R$)</span>
+                                        <span>Preço (R$)</span>
                                         <input id="storeProductPrice" type="number" min="0" step="0.01"
                                             placeholder="0.00" />
                                     </label>
@@ -497,7 +526,7 @@
             <div class="minicart__text">
                 <span id="miniCartItemsCount">0</span> itens &bull;
                 <span id="miniCartTotal">R$ 0,00</span> &bull;
-                SLA ~<span id="miniCartEta">—</span>
+                SLA ~<span id="miniCartEta">-</span>
             </div>
             <button id="miniCartBtn" class="btn btn--primary btn--sm" type="button">Abrir carrinho</button>
         </div>
@@ -574,7 +603,7 @@
                     </label>
                 </div>
 
-                <div class="form__title">Pagamento (antes da coleta) — Fase 4</div>
+                <div class="form__title">Pagamento (antes da coleta) - Fase 4</div>
                 <div class="paymethods" aria-label="Métodos de pagamento">
                     <label class="radio">
                         <input type="radio" name="paymethod" value="pix" checked />
@@ -636,7 +665,7 @@
         <div class="modal__panel">
             <div class="modal__header">
                 <div>
-                    <div class="modal__title">Fase 0 — Escopo do piloto</div>
+                    <div class="modal__title">Fase 0 - Escopo do piloto</div>
                     <div class="modal__subtitle">Defina limites claros para evitar caos operacional</div>
                 </div>
                 <button id="closeScopeBtn" class="iconbtn" type="button" aria-label="Fechar">✕</button>
@@ -659,7 +688,7 @@
                         <label class="field">
                             <span>Nicho âncora</span>
                             <select id="scopeNiche">
-                                <option value="Acessórios de celular">Acessórios de celular</option>
+                                <option value="AcessÃ³rios de celular">AcessÃ³rios de celular</option>
                                 <option value="Perfumaria">Perfumaria</option>
                                 <option value="Papelaria">Papelaria</option>
                             </select>
@@ -708,3 +737,4 @@
 </body>
 
 </html>
+

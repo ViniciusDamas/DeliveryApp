@@ -1,4 +1,4 @@
-// js/ui.js
+﻿// js/ui.js
 // Centraliza seletores e helpers visuais
 
 export const UI = {
@@ -48,6 +48,11 @@ export const UI = {
   productGrid: document.querySelector("#productGrid"),
   resultsHint: document.querySelector("#resultsHint"),
   sortSelect: document.querySelector("#sortSelect"),
+  sortDropdown: document.querySelector("#sortDropdown"),
+  sortDropdownBtn: document.querySelector("#sortDropdownBtn"),
+  sortDropdownMenu: document.querySelector("#sortDropdownMenu"),
+  sortDropdownLabel: document.querySelector("#sortDropdownLabel"),
+  sortDropdownOptions: document.querySelectorAll("#sortDropdownMenu .dropdown__option"),
 
   // KPI
   kpiAvgTime: document.querySelector("#kpiAvgTime"),
@@ -181,3 +186,4 @@ export function nowISO() {
 export function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
