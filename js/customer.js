@@ -1165,7 +1165,7 @@ export function renderCustomer() {
   syncSortDropdown();
 
   if (!hasShownWelcome) {
-    toast(`Welcome back. Deliveries active until ${State.scope.hours}.`);
+    toast(`Bem vindo(a) de volta. Entregas ativas até ${State.scope.hours}.`);
     hasShownWelcome = true;
   }
 
