@@ -1,13 +1,9 @@
 // js/customer.js
 // View do Cliente: catálogo + filtros + carrinho + pedidos (modal)
 
-// ...existing code...
 import { PLACEHOLDER_IMG } from "./data.js";
 import { UI, show, hide, toast, debounce, money, uid, nowISO } from "./ui.js";
-// ...existing code...
-// CHANGED: import helper getters used throughout this module
 import { State, saveAllState, getProductById, getStoreById } from "./storage.js";
-// ...existing code...
 
 const ORDER_STEPS = ["received", "accepted", "paid", "route", "done"];
 
@@ -414,6 +410,137 @@ function productCard(p) {
   `;
 }
 
+function rowTargetCount(list, min = 3, max = 6) {
+  if (!list.length) return 0;
+  const target = Math.min(max, list.length);
+  return target < min ? target : Math.max(min, target);
+}
+
+function splitByCategory(list) {
+  const cat = State.filters.category;
+  if (!cat || cat === "all") return { preferred: list, extra: [] };
+  const preferred = list.filter((p) => p.category === cat);
+  if (!preferred.length) return { preferred: list, extra: [] };
+  const extra = list.filter((p) => p.category !== cat);
+  return { preferred, extra };
+}
+
+function shuffleList(list) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildQuickPicks(preferred, extra, count) {
+  const picks = [];
+  const seen = new Set();
+  const add = (p) => {
+    if (!p || seen.has(p.id)) return;
+    seen.add(p.id);
+    picks.push(p);
+  };
+
+  const cheapest = [...preferred].sort((a, b) => a.price - b.price).slice(0, Math.min(3, preferred.length));
+  cheapest.forEach(add);
+
+  preferred.filter((p) => p.badge).forEach(add);
+
+  if (picks.length < count) {
+    extra.filter((p) => p.badge).forEach(add);
+  }
+
+  if (picks.length < count) {
+    const remaining = [...preferred, ...extra].filter((p) => !seen.has(p.id));
+    shuffleList(remaining)
+      .slice(0, count - picks.length)
+      .forEach(add);
+  }
+
+  return picks.slice(0, count);
+}
+
+function buildBestSellers(preferred, extra, count) {
+  const picks = [];
+  const seen = new Set();
+  const add = (p) => {
+    if (!p || seen.has(p.id)) return;
+    seen.add(p.id);
+    picks.push(p);
+  };
+
+  preferred.filter((p) => p.badge).forEach(add);
+  shuffleList(preferred.filter((p) => !p.badge)).forEach(add);
+
+  if (picks.length < count) {
+    shuffleList(extra).forEach(add);
+  }
+
+  return picks.slice(0, count);
+}
+
+function buildStoreRow(storeProducts, count) {
+  const { preferred, extra } = splitByCategory(storeProducts);
+  const merged = [...shuffleList(preferred), ...shuffleList(extra)];
+  return merged.slice(0, count);
+}
+
+function discoveryCard(p) {
+  const img = p.image || PLACEHOLDER_IMG;
+  return `
+    <button class="discovery-card" type="button" data-add="${p.id}" aria-label="Adicionar ${p.name}">
+      <div class="discovery-card__imgwrap">
+        <img class="discovery-card__img" src="${img}" alt="${p.name}" onerror="this.src='${PLACEHOLDER_IMG}'" />
+      </div>
+      <div class="discovery-card__name">${p.name}</div>
+      <div class="discovery-card__price">${money(p.price)}</div>
+    </button>
+  `;
+}
+
+function discoveryRow(title, items) {
+  if (!items.length) return "";
+  return `
+    <section class="discovery__row">
+      <div class="discovery__title">${title}</div>
+      <div class="discovery__scroll">
+        ${items.map(discoveryCard).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderDiscoveryRows() {
+  const container = document.querySelector("#discoveryRows");
+  if (!container) return;
+
+  const available = State.products.filter((p) => p.available);
+  if (!available.length) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const { preferred, extra } = splitByCategory(available);
+  const target = rowTargetCount(available);
+  const rows = [];
+
+  rows.push(discoveryRow("Escolhas rápidas", buildQuickPicks(preferred, extra, target)));
+  rows.push(discoveryRow("Mais vendidos", buildBestSellers(preferred, extra, target)));
+
+  const storeId = State.filters.store !== "all" ? State.filters.store : cartStoreId();
+  if (storeId) {
+    const storeProducts = available.filter((p) => p.storeId === storeId);
+    const storeTarget = rowTargetCount(storeProducts);
+    if (storeTarget) {
+      rows.push(discoveryRow("Da sua loja seleconada", buildStoreRow(storeProducts, storeTarget)));
+    }
+  }
+
+  container.innerHTML = rows.filter(Boolean).join("");
+}
+
 function renderProductGrid() {
   const list = filterProducts();
   UI.productGrid.innerHTML = list.map(productCard).join("");
@@ -483,6 +610,7 @@ function updateCartUI() {
   renderCartItems();
   renderCartTotals();
   updateMiniCartBar();
+  renderDiscoveryRows();
 }
 
 function flashAddFeedback(btn) {
@@ -595,6 +723,7 @@ export function renderCustomer() {
   renderCategories();
   renderStoresSidebar();
   renderProductGrid();
+  renderDiscoveryRows();
 
   updateCartUI();
   updateOrdersUI();
@@ -615,6 +744,7 @@ export function bindCustomerEvents() {
       State.filters.search = e.target.value || "";
       saveAllState();
       renderProductGrid();
+      renderDiscoveryRows();
     }, 180)
   );
 
@@ -623,6 +753,7 @@ export function bindCustomerEvents() {
     if (UI.searchInput) UI.searchInput.value = "";
     saveAllState();
     renderProductGrid();
+    renderDiscoveryRows();
   });
 
   // Sort
@@ -630,6 +761,7 @@ export function bindCustomerEvents() {
     State.filters.sort = e.target.value;
     saveAllState();
     renderProductGrid();
+    renderDiscoveryRows();
   });
 
   // Clicks no grid (delegação)
@@ -641,6 +773,13 @@ export function bindCustomerEvents() {
     }
   });
 
+  const discoveryRows = document.querySelector("#discoveryRows");
+  discoveryRows?.addEventListener("click", (e) => {
+    const card = e.target.closest("[data-add]");
+    if (!card) return;
+    addToCart(card.dataset.add);
+  });
+
   // Categorias (delegação)
   UI.categoryList?.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-cat]");
@@ -649,6 +788,7 @@ export function bindCustomerEvents() {
     saveAllState();
     renderCategories();
     renderProductGrid();
+    renderDiscoveryRows();
   });
 
   // Lojas (delegação)
@@ -659,6 +799,7 @@ export function bindCustomerEvents() {
     saveAllState();
     renderStoresSidebar();
     renderProductGrid();
+    renderDiscoveryRows();
   });
 
   // Cart open/close

@@ -14,7 +14,7 @@
         <div class="topbar__inner">
             <div class="brand" aria-label="FlashLocal">
                 <div class="brand__logo">
-                    <img src="./assets/logo/brand_logo.png" alt="Droppi logo" />    
+                    <img src="./assets/logo/brand_logo.png" alt="Droppi logo" />
                 </div>
                 <div class="brand__text">
                     <div class="brand__name">Droppi</div>
@@ -36,7 +36,8 @@
                 <div class="topbar__actions" id="topbarActions">
                     <button id="openCartBtn" class="btn btn--primary" type="button" aria-label="Abrir carrinho">
                         Carrinho
-                        <span id="cartCount" class="badge badge--dark" aria-label="Quantidade de itens no carrinho">0</span>
+                        <span id="cartCount" class="badge badge--dark"
+                            aria-label="Quantidade de itens no carrinho">0</span>
                     </button>
                 </div>
 
@@ -275,6 +276,8 @@
                         </div>
                     </div>
 
+                    <div id="discoveryRows" class="discovery"></div>
+
                     <div id="productGrid" class="grid" aria-label="Lista de produtos"></div>
 
                     <!-- (Opcional) Regras do piloto agora como card abaixo -->
@@ -298,7 +301,8 @@
             <div class="store-shell">
                 <aside id="storeSidebar" class="store-sidebar">
                     <div class="store-sidebar__head">
-                        <button id="storeSidebarToggle" class="iconbtn" type="button" aria-label="Expandir menu" aria-expanded="true">
+                        <button id="storeSidebarToggle" class="iconbtn" type="button" aria-label="Expandir menu"
+                            aria-expanded="true">
                             <span class="store-sidebar__icon" aria-hidden="true"></span>
                         </button>
                         <div class="store-sidebar__meta">
@@ -308,15 +312,18 @@
                     </div>
 
                     <nav class="store-sidebar__nav" aria-label="Menu da loja">
-                        <button class="store-nav is-active" type="button" data-store-nav="overview" aria-controls="storeSection-overview">
+                        <button class="store-nav is-active" type="button" data-store-nav="overview"
+                            aria-controls="storeSection-overview">
                             <span class="store-nav__dot" aria-hidden="true"></span>
                             <span class="store-nav__text">Visao geral</span>
                         </button>
-                        <button class="store-nav" type="button" data-store-nav="orders" aria-controls="storeSection-orders">
+                        <button class="store-nav" type="button" data-store-nav="orders"
+                            aria-controls="storeSection-orders">
                             <span class="store-nav__dot" aria-hidden="true"></span>
                             <span class="store-nav__text">Pedidos</span>
                         </button>
-                        <button class="store-nav" type="button" data-store-nav="products" aria-controls="storeSection-products">
+                        <button class="store-nav" type="button" data-store-nav="products"
+                            aria-controls="storeSection-products">
                             <span class="store-nav__dot" aria-hidden="true"></span>
                             <span class="store-nav__text">Produtos</span>
                         </button>
@@ -388,7 +395,8 @@
 
                                     <label class="field">
                                         <span>Preco (R$)</span>
-                                        <input id="storeProductPrice" type="number" min="0" step="0.01" placeholder="0.00" />
+                                        <input id="storeProductPrice" type="number" min="0" step="0.01"
+                                            placeholder="0.00" />
                                     </label>
 
                                     <label class="field">
@@ -408,7 +416,8 @@
                                         </span>
                                     </label>
 
-                                    <button id="storeProductSubmit" class="btn btn--primary btn--wide field--full" type="submit">
+                                    <button id="storeProductSubmit" class="btn btn--primary btn--wide field--full"
+                                        type="submit">
                                         Criar produto
                                     </button>
                                 </form>
@@ -423,7 +432,7 @@
                 </div>
             </div>
         </section>
-<!-- VIEW: Admin -->
+        <!-- VIEW: Admin -->
         <section id="view-admin" class="view hidden">
             <div class="panel">
                 <div class="panel__head">
@@ -457,11 +466,11 @@
     <div id="miniCartBar" class="minicart hidden" role="button" aria-label="Abrir carrinho" tabindex="0">
         <div class="minicart__content">
             <div class="minicart__text">
-                <span id="miniCartItemsCount">0</span> items &bull;
+                <span id="miniCartItemsCount">0</span> itens &bull;
                 <span id="miniCartTotal">R$ 0,00</span> &bull;
-                ETA ~<span id="miniCartEta">—</span>
+                SLA ~<span id="miniCartEta">—</span>
             </div>
-            <button id="miniCartBtn" class="btn btn--primary btn--sm" type="button">Open cart</button>
+            <button id="miniCartBtn" class="btn btn--primary btn--sm" type="button">Abrir carrinho</button>
         </div>
     </div>
 
