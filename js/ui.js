@@ -16,6 +16,8 @@ export const UI = {
   userMenu: document.querySelector("#userMenu"),
   userRoleLabel: document.querySelector("#userRoleLabel"),
   userNameLabel: document.querySelector("#userNameLabel"),
+  fxToggleBtn: document.querySelector("#fxToggleBtn"),
+  fxToggleBadge: document.querySelector("#fxToggleBadge"),
   logoutBtn: document.querySelector("#logoutBtn"),
 
   // Scope

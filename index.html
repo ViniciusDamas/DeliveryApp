@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./styles.css" />
 </head>
 
-<body>
+<body class="fx-lite">
     <!-- Topbar -->
     <header class="topbar">
         <div class="topbar__inner">
@@ -59,6 +59,10 @@
                             role="menuitem">
                             Pedidos
                             <span id="ordersBadge" class="badge" aria-label="Quantidade de pedidos">0</span>
+                        </button>
+                        <button id="fxToggleBtn" class="userbox__item" type="button" role="menuitem" aria-pressed="true">
+                            Efeitos reduzidos
+                            <span id="fxToggleBadge" class="badge badge--dark" aria-label="Estado de efeitos">On</span>
                         </button>
                         <button id="logoutBtn" class="userbox__item userbox__item--danger" type="button"
                             role="menuitem">Sair</button>
@@ -243,30 +247,30 @@
                     <!-- Mant«∏m o Hero -->
                     <div class="hero">
                         <div class="hero__text">
-                            <h1>Cat«≠logo curado (piloto)</h1>
-                            <p>Menos ruptura, opera«ı«úo mais r«≠pida. Selecione itens, feche pagamento e acompanhe o
+                            <h1>Cat√°logo curado (piloto)</h1>
+                            <p>Menos ruptura, opera√ß√£o mais r√°pida. Selecione itens, feche pagamento e acompanhe o
                                 status.</p>
-                            <div id="nowServingLine" class="hero__now">Now serving: -- | Active: --</div>
+                            <div id="nowServingLine" class="hero__now">Atendendo agora: -- | Ativo: --</div>
                             <div class="hero__actions">
-                                <button id="viewMetricsBtn" class="btn btn--ghost" type="button">Ver m«∏tricas (Fase
+                                <button id="viewMetricsBtn" class="btn btn--ghost" type="button">Ver m√©tricas (Fase
                                     7)</button>
                                 <button id="startDemoBtn" class="btn btn--primary" type="button">Fazer pedido
-                                    r«≠pido</button>
+                                    r√°pido</button>
                             </div>
                         </div>
 
                         <div class="hero__card" aria-label="KPIs do piloto">
                             <div class="kpi">
-                                <div class="kpi__label">Tempo m«∏dio (simulado)</div>
-                                <div class="kpi__value" id="kpiAvgTime">É?"</div>
+                                <div class="kpi__label">Tempo m√©dio (simulado)</div>
+                                <div class="kpi__value" id="kpiAvgTime">-"</div>
                             </div>
                             <div class="kpi">
                                 <div class="kpi__label">Cancelamentos (simulado)</div>
-                                <div class="kpi__value" id="kpiCancel">É?"</div>
+                                <div class="kpi__value" id="kpiCancel">-"</div>
                             </div>
                             <div class="kpi">
-                                <div class="kpi__label">Ticket m«∏dio (simulado)</div>
-                                <div class="kpi__value" id="kpiTicket">É?"</div>
+                                <div class="kpi__label">Ticket m√©dio (simulado)</div>
+                                <div class="kpi__value" id="kpiTicket">-"</div>
                             </div>
                         </div>
                     </div>
@@ -277,16 +281,17 @@
                     <div class="toolbar sectionhead">
                         <div class="toolbar__left sectionhead__main">
                             <div class="toolbar__title sectionhead__title">Produtos</div>
-                            <div class="toolbar__subtitle sectionhead__subtitle" id="resultsHint">Mostrando cat«≠logo completo</div>
+                            <div class="toolbar__subtitle sectionhead__subtitle" id="resultsHint">Mostrando cat√°logo
+                                completo</div>
                         </div>
 
                         <div class="toolbar__right sectionhead__actions">
                             <label class="select">
                                 <span>Ordenar</span>
                                 <select id="sortSelect" aria-label="Ordenar produtos">
-                                    <option value="relevance">Relev«Ωncia</option>
-                                    <option value="price_asc">Pre«ıo: menor É≈' maior</option>
-                                    <option value="price_desc">Pre«ıo: maior É≈' menor</option>
+                                    <option value="relevance">Relev√¢ncia</option>
+                                    <option value="price_asc">Pre√ßo: menor ‚Üí maior</option>
+                                    <option value="price_desc">Pre√ßo: maior ‚Üí menor</option>
                                     <option value="store">Loja</option>
                                 </select>
                             </label>
@@ -301,7 +306,8 @@
 
                     <!-- (Opcional) Regras do piloto agora como card abaixo -->
                     <section class="card card--collapsible" style="margin-top: 16px;">
-                        <button id="toggleRules" class="section-toggle section-toggle--card" type="button" aria-expanded="true">
+                        <button id="toggleRules" class="section-toggle section-toggle--card" type="button"
+                            aria-expanded="true">
                             <span class="section-toggle__title">Regras do piloto</span>
                             <span class="section-toggle__icon" aria-hidden="true"></span>
                         </button>
@@ -319,7 +325,7 @@
             </main>
 
         </section>
-<!-- VIEW: Loja -->
+        <!-- VIEW: Loja -->
         <section id="view-loja" class="view hidden">
             <div class="store-shell">
                 <aside id="storeSidebar" class="store-sidebar">
@@ -338,7 +344,7 @@
                         <button class="store-nav is-active" type="button" data-store-nav="overview"
                             aria-controls="storeSection-overview">
                             <span class="store-nav__dot" aria-hidden="true"></span>
-                            <span class="store-nav__text">Visao geral</span>
+                            <span class="store-nav__text">Vis√£o geral</span>
                         </button>
                         <button class="store-nav" type="button" data-store-nav="orders"
                             aria-controls="storeSection-orders">
@@ -702,7 +708,3 @@
 </body>
 
 </html>
-
-
-
-

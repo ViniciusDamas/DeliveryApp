@@ -57,6 +57,40 @@ body {
   margin: 14px 0;
 }
 
+/* Effects lite */
+.fx-lite .topbar {
+  backdrop-filter: blur(6px);
+}
+
+.fx-lite .minicart__content {
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.32);
+}
+
+.fx-lite .btn {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+}
+
+.fx-lite .btn--primary {
+  box-shadow: 0 10px 24px var(--accent-soft, rgba(34, 195, 166, 0.18));
+}
+
+.fx-lite .card.card--product:hover {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.fx-lite .storebtn {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+}
+
+.fx-lite .storebtn:hover {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.fx-lite .storebtn--active {
+  box-shadow: 0 10px 24px var(--accent-soft, rgba(34, 195, 166, 0.14));
+}
+
 /* ============ Topbar ============ */
 .topbar {
   position: sticky;

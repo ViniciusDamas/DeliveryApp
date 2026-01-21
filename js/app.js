@@ -105,6 +105,13 @@ function initUserMenu() {
   });
 
   UI.openOrdersBtn?.addEventListener("click", closeUserMenu);
+
+  if (UI.fxToggleBtn) {
+    updateFxToggleUI();
+    UI.fxToggleBtn.addEventListener("click", () => {
+      toggleFxLite();
+    });
+  }
 }
 
 function renderLoginStoreOptions() {
@@ -263,10 +270,39 @@ function init() {
 
 document.addEventListener("DOMContentLoaded", init);
 
+function setFxLite(enabled) {
+  if (!document.body) return;
+  document.body.classList.toggle("fx-lite", enabled);
+  updateFxToggleUI();
+}
+
+function toggleFxLite() {
+  if (!document.body) return false;
+  document.body.classList.toggle("fx-lite");
+  updateFxToggleUI();
+  return document.body.classList.contains("fx-lite");
+}
+
+function updateFxToggleUI() {
+  if (!UI.fxToggleBtn) return;
+  const isLite = Boolean(document.body && document.body.classList.contains("fx-lite"));
+  UI.fxToggleBtn.setAttribute("aria-pressed", isLite ? "true" : "false");
+  if (UI.fxToggleBadge) UI.fxToggleBadge.textContent = isLite ? "On" : "Off";
+}
+
 // Expondo só para debug manual (opcional)
 window.FL = {
   State,
   saveAllState,
   resetAllData,
   toast,
+  fx: {
+    enable: () => setFxLite(true),
+    disable: () => setFxLite(false),
+    toggle: () => toggleFxLite(),
+    isLite: () => Boolean(document.body && document.body.classList.contains("fx-lite")),
+  },
 };
+
+
+

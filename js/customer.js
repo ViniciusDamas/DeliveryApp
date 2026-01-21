@@ -174,6 +174,7 @@ const renderSchedule = {
   sidebar: false,
   kpis: false,
   scheduled: false,
+  sidebarSync: false,
 };
 const productListCache = new Map();
 const PRODUCT_CACHE_LIMIT = 30;
@@ -187,6 +188,7 @@ function scheduleRender({ grid = false, rows = false, sidebar = false, kpis = fa
 
   if (renderSchedule.scheduled) return;
   renderSchedule.scheduled = true;
+  // Coalesce multiple render requests into a single animation frame.
   requestAnimationFrame(() => {
     renderSchedule.scheduled = false;
     const doGrid = renderSchedule.grid;
@@ -201,7 +203,14 @@ function scheduleRender({ grid = false, rows = false, sidebar = false, kpis = fa
     if (doSidebar) {
       renderCategories();
       renderStoresSidebar();
-      syncSectionHeights();
+      // Defer height reads to the next frame to avoid layout thrash.
+      if (!renderSchedule.sidebarSync) {
+        renderSchedule.sidebarSync = true;
+        requestAnimationFrame(() => {
+          renderSchedule.sidebarSync = false;
+          syncSectionHeights();
+        });
+      }
     }
     if (doGrid) renderProductGrid();
     if (doRows) renderDiscoveryRows();
@@ -555,9 +564,11 @@ function renderCategories() {
 
 function setSectionExpanded(btn, body, expanded) {
   if (!btn || !body) return;
+  const height = expanded ? body.scrollHeight : 0;
   btn.setAttribute("aria-expanded", expanded ? "true" : "false");
   body.classList.toggle("is-collapsed", !expanded);
-  body.style.maxHeight = expanded ? `${body.scrollHeight}px` : "0px";
+  // Read before write to avoid forcing layout after style updates.
+  body.style.maxHeight = expanded ? `${height}px` : "0px";
 }
 
 function syncSectionHeights() {
@@ -999,6 +1010,7 @@ function updateMiniCartBar() {
     return;
   }
 
+  // Text-only updates keep the bar stable without re-rendering.
   if (UI.miniCartItemsCount) UI.miniCartItemsCount.textContent = String(count);
   if (UI.miniCartTotal) UI.miniCartTotal.textContent = money(cartTotal());
 
@@ -1156,11 +1168,12 @@ export function bindCustomerEvents() {
   UI.searchInput?.addEventListener(
     "input",
     debounce((e) => {
+      // Slightly higher debounce keeps typing smooth while avoiding extra renders.
       PERF.startAction("search input");
       State.filters.search = e.target.value || "";
       saveAllState();
       scheduleRender({ grid: true, rows: true });
-    }, 180)
+    }, 240)
   );
 
   UI.clearSearchBtn?.addEventListener("click", () => {
