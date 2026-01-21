@@ -257,6 +257,9 @@ body {
   margin: 0 auto;
   padding: 16px 18px 40px;
 }
+body[data-route="cliente"].has-minicart .views{
+  padding-bottom: 140px;
+}
 
 /* Auth views */
 .auth{
@@ -361,8 +364,11 @@ body {
   gap: 4px;
   transition: background .14s ease, border-color .14s ease, transform .06s ease;
 }
-.listbtn:hover{ background: rgba(255,255,255,0.06); }
-.listbtn:active{ transform: translateY(1px); }
+.listbtn:hover{
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+}
+.listbtn:active{ transform: translateY(0) scale(0.99); }
 .listbtn--active{
   border-color: rgba(34,195,166,0.65);
   background:
@@ -523,8 +529,11 @@ body {
   font-weight: 900;
   transition: background .14s ease, border-color .14s ease, transform .06s ease, filter .12s ease;
 }
-.btn:hover{ background: rgba(255,255,255,0.06); }
-.btn:active{ transform: translateY(1px); }
+.btn:hover{
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+}
+.btn:active{ transform: translateY(0) scale(0.99); }
 
 .btn--sm{ padding: 8px 10px; border-radius: 12px; font-size: 12px; }
 .btn--ghost{
@@ -556,6 +565,16 @@ body {
   background: rgba(0,0,0,0.25);
 }
 
+.btn:focus-visible,
+.iconbtn:focus-visible,
+.storebtn:focus-visible,
+.listbtn:focus-visible,
+.store-nav:focus-visible,
+.userbox__item:focus-visible{
+  outline: 2px solid rgba(34,195,166,0.8);
+  outline-offset: 2px;
+}
+
 /* Icon button */
 .iconbtn{
   width: 36px;
@@ -565,8 +584,13 @@ body {
   background: rgba(18,31,59,0.40);
   color: rgba(255,255,255,0.92);
   cursor: pointer;
+  transition: background .14s ease, border-color .14s ease, transform .06s ease;
 }
-.iconbtn:hover{ background: rgba(255,255,255,0.06); }
+.iconbtn:hover{
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+}
+.iconbtn:active{ transform: translateY(0) scale(0.98); }
 
 /* ============ Drawer / Overlay / Modal ============ */
 .overlay{
@@ -681,6 +705,40 @@ body {
   padding: 10px 12px;
   outline: none;
   transition: border-color .14s ease, box-shadow .14s ease, background .14s ease;
+}
+
+/* Mini cart summary */
+.minicart{
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 85;
+  width: min(720px, 92vw);
+}
+.minicart__content{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background:
+    radial-gradient(600px 240px at 20% 0%, rgba(34,195,166,0.16), transparent 60%),
+    rgba(10,18,34,0.78);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.4);
+  cursor: pointer;
+}
+.minicart__text{
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: rgba(255,255,255,0.9);
+}
+.minicart__content .btn{
+  white-space: nowrap;
 }
 .field select option{
   background: rgba(10,18,34,0.98);
@@ -931,7 +989,7 @@ body {
   line-height: 1;
 }
 .store-nav:hover{ background: rgba(255,255,255,0.06); }
-.store-nav:active{ transform: translateY(1px); }
+.store-nav:active{ transform: translateY(0) scale(0.99); }
 .store-nav__dot{
   width: 8px;
   height: 8px;
@@ -1113,7 +1171,7 @@ body[data-route="admin"] .userbox__item--orders{
 }
 
 .btn--primary:active {
-  transform: translateY(1px) scale(0.99);
+  transform: translateY(0) scale(0.99);
 }
 
 /* Botão amplo (para cards) */
@@ -1135,6 +1193,15 @@ body[data-route="admin"] .userbox__item--orders{
   border-radius: var(--radius);
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(15, 25, 48, 0.55);
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.card.card--product:hover{
+  transform: translateY(-3px);
+  border-color: rgba(34,195,166,0.35);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.28);
+}
+.card.card--product:active{
+  transform: translateY(-1px) scale(0.99);
 }
 
 /* Área da imagem */
@@ -1254,10 +1321,12 @@ body[data-route="admin"] .userbox__item--orders{
 .storebtn:hover {
   background: rgba(18, 31, 59, 0.55);
   border-color: rgba(34,195,166,0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(0,0,0,0.24);
 }
 
 .storebtn:active {
-  transform: translateY(1px);
+  transform: translateY(0) scale(0.99);
 }
 
 .storebtn__name {

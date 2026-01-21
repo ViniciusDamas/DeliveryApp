@@ -57,6 +57,11 @@ export const UI = {
   totalValue: document.querySelector("#totalValue"),
   clearCartBtn: document.querySelector("#clearCartBtn"),
   checkoutBtn: document.querySelector("#checkoutBtn"),
+  miniCartBar: document.querySelector("#miniCartBar"),
+  miniCartItemsCount: document.querySelector("#miniCartItemsCount"),
+  miniCartTotal: document.querySelector("#miniCartTotal"),
+  miniCartEta: document.querySelector("#miniCartEta"),
+  miniCartBtn: document.querySelector("#miniCartBtn"),
 
   // Checkout fields
   customerName: document.querySelector("#customerName"),

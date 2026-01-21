@@ -140,6 +140,11 @@ function showView(route) {
   updateUserBox(route);
   syncUserBoxLocation(route);
 
+  if (route !== "cliente") {
+    document.body.classList.remove("has-minicart");
+    hide(UI.miniCartBar);
+  }
+
   // Render por rota
   if (route === "cliente") renderCustomer();
   if (route === "loja") renderStoreView();
