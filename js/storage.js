@@ -33,6 +33,10 @@ export const State = {
     store: "all",
     sort: "relevance",
     lojaSelectedStoreId: "all",
+    storeSearch: "",
+    collapseCategories: false,
+    collapseStores: false,
+    collapseRules: false,
   },
 
   auth: {
@@ -128,6 +132,10 @@ export function resetAllData() {
     store: "all",
     sort: "relevance",
     lojaSelectedStoreId: "all",
+    storeSearch: "",
+    collapseCategories: false,
+    collapseStores: false,
+    collapseRules: false,
   };
   State.auth = {
     customer: { loggedIn: false, name: "", phone: "", email: "" },

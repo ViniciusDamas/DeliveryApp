@@ -215,44 +215,58 @@
         <section id="view-cliente" class="view hidden">
             <main class="layout layout--customer">
                 <aside class="sidebar">
-                    <div class="sidebar__section">
-                        <div class="sidebar__title sectionhead__title">Categorias</div>
-                        <div id="categoryList" class="list" aria-label="Categorias"></div>
+                    <div class="sidebar__section" data-collapsible="categories">
+                        <button id="toggleCategories" class="section-toggle" type="button" aria-expanded="true">
+                            <span class="section-toggle__title">Categorias</span>
+                            <span class="section-toggle__icon" aria-hidden="true"></span>
+                        </button>
+                        <div id="categorySectionBody" class="section-body">
+                            <div id="categoryList" class="list" aria-label="Categorias"></div>
+                        </div>
                     </div>
 
-                    <div class="sidebar__section">
-                        <div class="sidebar__title sectionhead__title">Lojas parceiras</div>
-                        <div id="storeList" class="list" aria-label="Lojas parceiras"></div>
+                    <div class="sidebar__section" data-collapsible="stores">
+                        <button id="toggleStores" class="section-toggle" type="button" aria-expanded="true">
+                            <span class="section-toggle__title">Lojas parceiras</span>
+                            <span class="section-toggle__icon" aria-hidden="true"></span>
+                        </button>
+                        <div id="storeSectionBody" class="section-body">
+                            <label class="field field--compact">
+                                <span>Buscar loja</span>
+                                <input id="storeSearchInput" type="text" placeholder="Nome ou nicho..." />
+                            </label>
+                            <div id="storeList" class="list" aria-label="Lojas parceiras"></div>
+                        </div>
                     </div>
                 </aside>
                 <section class="content">
-                    <!-- Mantém o Hero -->
+                    <!-- MantǸm o Hero -->
                     <div class="hero">
                         <div class="hero__text">
-                            <h1>Catálogo curado (piloto)</h1>
-                            <p>Menos ruptura, operação mais rápida. Selecione itens, feche pagamento e acompanhe o
+                            <h1>Catǭlogo curado (piloto)</h1>
+                            <p>Menos ruptura, opera��ǜo mais rǭpida. Selecione itens, feche pagamento e acompanhe o
                                 status.</p>
                             <div id="nowServingLine" class="hero__now">Now serving: -- | Active: --</div>
                             <div class="hero__actions">
-                                <button id="viewMetricsBtn" class="btn btn--ghost" type="button">Ver métricas (Fase
+                                <button id="viewMetricsBtn" class="btn btn--ghost" type="button">Ver mǸtricas (Fase
                                     7)</button>
                                 <button id="startDemoBtn" class="btn btn--primary" type="button">Fazer pedido
-                                    rápido</button>
+                                    rǭpido</button>
                             </div>
                         </div>
 
                         <div class="hero__card" aria-label="KPIs do piloto">
                             <div class="kpi">
-                                <div class="kpi__label">Tempo médio (simulado)</div>
-                                <div class="kpi__value" id="kpiAvgTime">—</div>
+                                <div class="kpi__label">Tempo mǸdio (simulado)</div>
+                                <div class="kpi__value" id="kpiAvgTime">�?"</div>
                             </div>
                             <div class="kpi">
                                 <div class="kpi__label">Cancelamentos (simulado)</div>
-                                <div class="kpi__value" id="kpiCancel">—</div>
+                                <div class="kpi__value" id="kpiCancel">�?"</div>
                             </div>
                             <div class="kpi">
-                                <div class="kpi__label">Ticket médio (simulado)</div>
-                                <div class="kpi__value" id="kpiTicket">—</div>
+                                <div class="kpi__label">Ticket mǸdio (simulado)</div>
+                                <div class="kpi__value" id="kpiTicket">�?"</div>
                             </div>
                         </div>
                     </div>
@@ -263,16 +277,16 @@
                     <div class="toolbar sectionhead">
                         <div class="toolbar__left sectionhead__main">
                             <div class="toolbar__title sectionhead__title">Produtos</div>
-                            <div class="toolbar__subtitle sectionhead__subtitle" id="resultsHint">Mostrando catálogo completo</div>
+                            <div class="toolbar__subtitle sectionhead__subtitle" id="resultsHint">Mostrando catǭlogo completo</div>
                         </div>
 
                         <div class="toolbar__right sectionhead__actions">
                             <label class="select">
                                 <span>Ordenar</span>
                                 <select id="sortSelect" aria-label="Ordenar produtos">
-                                    <option value="relevance">Relevância</option>
-                                    <option value="price_asc">Preço: menor → maior</option>
-                                    <option value="price_desc">Preço: maior → menor</option>
+                                    <option value="relevance">Relevǽncia</option>
+                                    <option value="price_asc">Pre��o: menor ��' maior</option>
+                                    <option value="price_desc">Pre��o: maior ��' menor</option>
                                     <option value="store">Loja</option>
                                 </select>
                             </label>
@@ -286,22 +300,26 @@
                     <div id="productGrid" class="grid" aria-label="Lista de produtos"></div>
 
                     <!-- (Opcional) Regras do piloto agora como card abaixo -->
-                    <section class="card" style="margin-top: 16px;">
-                        <div class="sidebar__title" style="margin:0 0 10px;">Regras do piloto</div>
-                        <div class="note">
-                            <div class="note__row"><strong>Pedido guiado</strong> (Fase 2)</div>
-                            <div class="note__row"><strong>Aceite rápido</strong> (Fase 3)</div>
-                            <div class="note__row"><strong>Pagamento antes</strong> da coleta (Fase 4)</div>
-                            <div class="note__row"><strong>Status padronizado</strong> (Fase 6)</div>
-                            <div class="note__row"><strong>1 pedido = 1 loja</strong> (SLA)</div>
+                    <section class="card card--collapsible" style="margin-top: 16px;">
+                        <button id="toggleRules" class="section-toggle section-toggle--card" type="button" aria-expanded="true">
+                            <span class="section-toggle__title">Regras do piloto</span>
+                            <span class="section-toggle__icon" aria-hidden="true"></span>
+                        </button>
+                        <div id="rulesSectionBody" class="section-body">
+                            <div class="note">
+                                <div class="note__row"><strong>Pedido guiado</strong> (Fase 2)</div>
+                                <div class="note__row"><strong>Aceite rǭpido</strong> (Fase 3)</div>
+                                <div class="note__row"><strong>Pagamento antes</strong> da coleta (Fase 4)</div>
+                                <div class="note__row"><strong>Status padronizado</strong> (Fase 6)</div>
+                                <div class="note__row"><strong>1 pedido = 1 loja</strong> (SLA)</div>
+                            </div>
                         </div>
                     </section>
                 </section>
             </main>
 
         </section>
-
-        <!-- VIEW: Loja -->
+<!-- VIEW: Loja -->
         <section id="view-loja" class="view hidden">
             <div class="store-shell">
                 <aside id="storeSidebar" class="store-sidebar">
@@ -684,4 +702,7 @@
 </body>
 
 </html>
+
+
+
 

@@ -34,6 +34,13 @@ export const UI = {
   // Sidebar
   categoryList: document.querySelector("#categoryList"),
   storeList: document.querySelector("#storeList"),
+  storeSearchInput: document.querySelector("#storeSearchInput"),
+  toggleCategories: document.querySelector("#toggleCategories"),
+  toggleStores: document.querySelector("#toggleStores"),
+  toggleRules: document.querySelector("#toggleRules"),
+  categorySectionBody: document.querySelector("#categorySectionBody"),
+  storeSectionBody: document.querySelector("#storeSectionBody"),
+  rulesSectionBody: document.querySelector("#rulesSectionBody"),
 
   // Content
   productGrid: document.querySelector("#productGrid"),

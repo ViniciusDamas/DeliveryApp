@@ -25,12 +25,207 @@ const ACCENTS = {
   },
 };
 let hasShownWelcome = false;
+const PERF_ENABLED = Boolean(State.debugPerf);
+
+const PERF = (() => {
+  const state = {
+    enabled: PERF_ENABLED,
+    action: null,
+    actionId: 0,
+    totals: {
+      calls: {},
+      products: {},
+      nodes: {},
+      durations: {},
+    },
+    actions: {},
+  };
+
+  const measureId = (name) => `fl:${name}:${Date.now()}:${Math.random().toString(16).slice(2)}`;
+
+  const markStart = (name) => {
+    if (!state.enabled || !window.performance?.mark) return null;
+    const id = measureId(name);
+    performance.mark(`${id}:start`);
+    return id;
+  };
+
+  const markEnd = (name, id) => {
+    if (!state.enabled || !id || !window.performance?.mark || !window.performance?.measure) return;
+    const start = `${id}:start`;
+    const end = `${id}:end`;
+    performance.mark(end);
+    performance.measure(name, start, end);
+    const entries = performance.getEntriesByName(name);
+    const last = entries[entries.length - 1];
+    if (last) recordDuration(name, last.duration);
+    performance.clearMarks(start);
+    performance.clearMarks(end);
+    performance.clearMeasures(name);
+  };
+
+  const recordDuration = (name, duration) => {
+    state.totals.durations[name] = (state.totals.durations[name] || 0) + duration;
+    if (state.action) {
+      const action = state.actions[state.actionId];
+      action.durations[name] = (action.durations[name] || 0) + duration;
+    }
+  };
+
+  const countNodes = (html) => {
+    if (!state.enabled || !html) return 0;
+    const wrap = document.createElement("div");
+    wrap.innerHTML = html;
+    return wrap.querySelectorAll("*").length;
+  };
+
+  const track = (name, { products = 0, nodes = 0 } = {}) => {
+    if (!state.enabled) return;
+    state.totals.calls[name] = (state.totals.calls[name] || 0) + 1;
+    state.totals.products[name] = (state.totals.products[name] || 0) + products;
+    state.totals.nodes[name] = (state.totals.nodes[name] || 0) + nodes;
+    if (state.action) {
+      const action = state.actions[state.actionId];
+      action.calls[name] = (action.calls[name] || 0) + 1;
+      action.products[name] = (action.products[name] || 0) + products;
+      action.nodes[name] = (action.nodes[name] || 0) + nodes;
+    }
+  };
+
+  const startAction = (name) => {
+    if (!state.enabled) return;
+    state.action = name;
+    state.actionId += 1;
+    state.actions[state.actionId] = {
+      action: name,
+      calls: {},
+      products: {},
+      nodes: {},
+      durations: {},
+    };
+  };
+
+  const endAction = () => {
+    if (!state.enabled || !state.action) return;
+    const action = state.actions[state.actionId];
+    const rows = ["filterProducts", "renderProductGrid", "renderDiscoveryRows", "updateCartUI"].map((fn) => {
+      const calls = action.calls[fn] || 0;
+      const totalMs = action.durations[fn] || 0;
+      return {
+        action: action.action,
+        fn,
+        calls,
+        products: action.products[fn] || 0,
+        nodes: action.nodes[fn] || 0,
+        totalMs: Number(totalMs.toFixed(2)),
+        avgMs: calls ? Number((totalMs / calls).toFixed(2)) : 0,
+      };
+    });
+    console.table(rows);
+    state.action = null;
+  };
+
+  const dump = () => {
+    if (!state.enabled) return;
+    const rows = ["filterProducts", "renderProductGrid", "renderDiscoveryRows", "updateCartUI"].map((fn) => {
+      const calls = state.totals.calls[fn] || 0;
+      const totalMs = state.totals.durations[fn] || 0;
+      return {
+        fn,
+        calls,
+        products: state.totals.products[fn] || 0,
+        nodes: state.totals.nodes[fn] || 0,
+        totalMs: Number(totalMs.toFixed(2)),
+        avgMs: calls ? Number((totalMs / calls).toFixed(2)) : 0,
+      };
+    });
+    console.table(rows);
+  };
+
+  const reset = () => {
+    if (!state.enabled) return;
+    state.totals = { calls: {}, products: {}, nodes: {}, durations: {} };
+    state.actions = {};
+    state.action = null;
+  };
+
+  return {
+    enabled: state.enabled,
+    markStart,
+    markEnd,
+    track,
+    startAction,
+    endAction,
+    hasAction: () => Boolean(state.action),
+    countNodes,
+    dump,
+    reset,
+  };
+})();
+
+window.FL_PERF = {
+  dump: () => PERF.dump(),
+  reset: () => PERF.reset(),
+};
+
+const renderSchedule = {
+  grid: false,
+  rows: false,
+  sidebar: false,
+  kpis: false,
+  scheduled: false,
+};
+const productListCache = new Map();
+const PRODUCT_CACHE_LIMIT = 30;
+let categoriesCache = null;
+
+function scheduleRender({ grid = false, rows = false, sidebar = false, kpis = false } = {}) {
+  renderSchedule.grid = renderSchedule.grid || grid;
+  renderSchedule.rows = renderSchedule.rows || rows;
+  renderSchedule.sidebar = renderSchedule.sidebar || sidebar;
+  renderSchedule.kpis = renderSchedule.kpis || kpis;
+
+  if (renderSchedule.scheduled) return;
+  renderSchedule.scheduled = true;
+  requestAnimationFrame(() => {
+    renderSchedule.scheduled = false;
+    const doGrid = renderSchedule.grid;
+    const doRows = renderSchedule.rows;
+    const doSidebar = renderSchedule.sidebar;
+    const doKpis = renderSchedule.kpis;
+    renderSchedule.grid = false;
+    renderSchedule.rows = false;
+    renderSchedule.sidebar = false;
+    renderSchedule.kpis = false;
+
+    if (doSidebar) {
+      renderCategories();
+      renderStoresSidebar();
+      syncSectionHeights();
+    }
+    if (doGrid) renderProductGrid();
+    if (doRows) renderDiscoveryRows();
+    if (doKpis) updateKpis();
+    if (PERF.hasAction()) PERF.endAction();
+  });
+}
 
 function normalizeKey(value) {
   return String(value || "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function cacheProductList(key, list) {
+  if (productListCache.has(key)) {
+    productListCache.delete(key);
+  }
+  productListCache.set(key, list);
+  if (productListCache.size > PRODUCT_CACHE_LIMIT) {
+    const oldestKey = productListCache.keys().next().value;
+    if (oldestKey) productListCache.delete(oldestKey);
+  }
 }
 
 function hexToRgba(hex, alpha = 0.18) {
@@ -59,13 +254,21 @@ function applyAccent({ category, storeId }) {
 
 function computeCategories() {
   if (Array.isArray(State.categories) && State.categories.length) {
-    return State.categories;
+    if (!categoriesCache || categoriesCache.source !== "state") {
+      categoriesCache = { source: "state", value: State.categories };
+    }
+    return categoriesCache.value;
   }
+  if (categoriesCache?.value) return categoriesCache.value;
 
   const set = new Set((State.products || []).map((p) => p.category));
   const cats = Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
   const placeholder = PLACEHOLDER_IMG || "./assets/products/placeholder.jpg";
-  return [{ id: "all", label: "Todas", image: placeholder }, ...cats.map((c) => ({ id: c, label: c, image: placeholder }))];
+  categoriesCache = {
+    source: "computed",
+    value: [{ id: "all", label: "Todas", image: placeholder }, ...cats.map((c) => ({ id: c, label: c, image: placeholder }))],
+  };
+  return categoriesCache.value;
 }
 
 function cartCount() {
@@ -350,6 +553,19 @@ function renderCategories() {
     .join("");
 }
 
+function setSectionExpanded(btn, body, expanded) {
+  if (!btn || !body) return;
+  btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+  body.classList.toggle("is-collapsed", !expanded);
+  body.style.maxHeight = expanded ? `${body.scrollHeight}px` : "0px";
+}
+
+function syncSectionHeights() {
+  setSectionExpanded(UI.toggleCategories, UI.categorySectionBody, !State.filters.collapseCategories);
+  setSectionExpanded(UI.toggleStores, UI.storeSectionBody, !State.filters.collapseStores);
+  setSectionExpanded(UI.toggleRules, UI.rulesSectionBody, !State.filters.collapseRules);
+}
+
 function renderStoresSidebar() {
   const storeTiles = [
     {
@@ -366,7 +582,19 @@ function renderStoresSidebar() {
     })),
   ];
 
-  UI.storeList.innerHTML = storeTiles
+  const q = (State.filters.storeSearch || "").toLowerCase().trim();
+  const filtered = storeTiles.filter((s) => {
+    if (s.id === "all") return true;
+    if (!q) return true;
+    return s.name.toLowerCase().includes(q) || s.niche.toLowerCase().includes(q);
+  });
+
+  if (filtered.length === 0) {
+    UI.storeList.innerHTML = `<div class="note">Nenhuma loja encontrada.</div>`;
+    return;
+  }
+
+  UI.storeList.innerHTML = filtered
     .map((s) => {
       const active = State.filters.store === s.id ? "listbtn--active" : "";
       const r = s.rating ? `Rating ${s.rating.toFixed(1)}` : "Sem rating";
@@ -401,28 +629,44 @@ function sortProducts(list) {
   return list; // relevance (do jeito que está)
 }
 
+function getProductCacheKey({ search, category, store, sort }) {
+  return JSON.stringify({
+    search,
+    category,
+    store,
+    sort,
+  });
+}
+
 function filterProducts() {
+  const perfId = PERF.markStart("filterProducts");
   const q = (State.filters.search || "").toLowerCase().trim();
-  const cat = State.filters.category;
-  const store = State.filters.store;
+  const cat = State.filters.category || "all";
+  const store = State.filters.store || "all";
+  const sort = State.filters.sort || "relevance";
+  const cacheKey = getProductCacheKey({ search: q, category: cat, store, sort });
 
-  let list = State.products.filter((p) => p.available);
+  let list = productListCache.get(cacheKey);
+  if (!list) {
+    list = State.products.filter((p) => p.available);
 
-  if (store !== "all") list = list.filter((p) => p.storeId === store);
-  if (cat !== "all") list = list.filter((p) => p.category === cat);
+    if (store !== "all") list = list.filter((p) => p.storeId === store);
+    if (cat !== "all") list = list.filter((p) => p.category === cat);
 
-  if (q) {
-    list = list.filter((p) => {
-      const storeName = getStoreById(p.storeId)?.name || "";
-      return (
-        p.name.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        storeName.toLowerCase().includes(q)
-      );
-    });
+    if (q) {
+      list = list.filter((p) => {
+        const storeName = getStoreById(p.storeId)?.name || "";
+        return (
+          p.name.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          storeName.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    list = sortProducts(list);
   }
-
-  list = sortProducts(list);
+  cacheProductList(cacheKey, list);
 
   // hint
   const hintParts = [];
@@ -434,12 +678,21 @@ function filterProducts() {
     ? `Filtrado para você: ${hintParts.join(" - ")}`
     : "Navegue com tranquilidade - entrega rápida na sua área.";
 
+  PERF.track("filterProducts", { products: list.length, nodes: 0 });
+  PERF.markEnd("filterProducts", perfId);
   return list;
 }
 
 function productCard(p) {
   const store = getStoreById(p.storeId);
   const img = p.image || PLACEHOLDER_IMG;
+  const etaAvg =
+    store && typeof store.etaMin === "number" && typeof store.etaMax === "number"
+      ? Math.round((store.etaMin + store.etaMax) / 2)
+      : null;
+  const subline = etaAvg ? `~${etaAvg} min` : store ? `Entrega: ${money(store.deliveryFee || 0)}` : "";
+  const sublineHtml = subline ? `<div class="card__subline">${subline}</div>` : "";
+  const pill = store?.niche || p.category;
 
   const badgeHtml = p.badge ? `<span class="tag">${p.badge}</span>` : "";
 
@@ -460,8 +713,15 @@ function productCard(p) {
         </div>
 
         <div class="card__store">${store ? store.name : ""}</div>
+        <div class="card__pill">${pill}</div>
 
-        <div class="card__price">${money(p.price)}</div>
+        <div class="card__priceRow">
+          <div class="card__price">${money(p.price)}</div>
+          <button class="iconbtn iconbtn--sm iconbtn--ghost" type="button" data-save="${p.id}" aria-label="Salvar produto">
+            <span aria-hidden="true">&#128278;</span>
+          </button>
+        </div>
+        ${sublineHtml}
 
         <button class="btn btn--primary btn--wide" type="button" data-add="${p.id}">
           Adicionar
@@ -578,37 +838,58 @@ function discoveryRow(title, items) {
 }
 
 function renderDiscoveryRows() {
+  const perfId = PERF.markStart("renderDiscoveryRows");
   const container = document.querySelector("#discoveryRows");
-  if (!container) return;
+  if (!container) {
+    PERF.track("renderDiscoveryRows", { products: 0, nodes: 0 });
+    PERF.markEnd("renderDiscoveryRows", perfId);
+    return;
+  }
 
   const available = State.products.filter((p) => p.available);
   if (!available.length) {
     container.innerHTML = "";
+    PERF.track("renderDiscoveryRows", { products: 0, nodes: 0 });
+    PERF.markEnd("renderDiscoveryRows", perfId);
     return;
   }
 
   const { preferred, extra } = splitByCategory(available);
   const target = rowTargetCount(available);
   const rows = [];
+  let cardsRendered = 0;
 
-  rows.push(discoveryRow("Escolhas rápidas", buildQuickPicks(preferred, extra, target)));
-  rows.push(discoveryRow("Mais vendidos", buildBestSellers(preferred, extra, target)));
+  const quickPicks = buildQuickPicks(preferred, extra, target);
+  cardsRendered += quickPicks.length;
+  rows.push(discoveryRow("Escolhas rápidas", quickPicks));
+  const bestSellers = buildBestSellers(preferred, extra, target);
+  cardsRendered += bestSellers.length;
+  rows.push(discoveryRow("Mais vendidos", bestSellers));
 
   const storeId = State.filters.store !== "all" ? State.filters.store : cartStoreId();
   if (storeId) {
     const storeProducts = available.filter((p) => p.storeId === storeId);
     const storeTarget = rowTargetCount(storeProducts);
     if (storeTarget) {
-      rows.push(discoveryRow("Da sua loja selecionada", buildStoreRow(storeProducts, storeTarget)));
+      const storeRowItems = buildStoreRow(storeProducts, storeTarget);
+      cardsRendered += storeRowItems.length;
+      rows.push(discoveryRow("Da sua loja selecionada", storeRowItems));
     }
   }
 
-  container.innerHTML = rows.filter(Boolean).join("");
+  const html = rows.filter(Boolean).join("");
+  container.innerHTML = html;
+  PERF.track("renderDiscoveryRows", { products: cardsRendered, nodes: PERF.countNodes(html) });
+  PERF.markEnd("renderDiscoveryRows", perfId);
 }
 
 function renderProductGrid() {
+  const perfId = PERF.markStart("renderProductGrid");
   const list = filterProducts();
-  UI.productGrid.innerHTML = list.map(productCard).join("");
+  const html = list.map(productCard).join("");
+  UI.productGrid.innerHTML = html;
+  PERF.track("renderProductGrid", { products: list.length, nodes: PERF.countNodes(html) });
+  PERF.markEnd("renderProductGrid", perfId);
 }
 
 function renderCartItems() {
@@ -671,12 +952,15 @@ function updateMiniCartBar() {
 }
 
 function updateCartUI() {
+  const perfId = PERF.markStart("updateCartUI");
   if (UI.cartCount) UI.cartCount.textContent = String(cartCount());
   renderCartItems();
   renderCartTotals();
   updateMiniCartBar();
-  renderDiscoveryRows();
   applyAccentFromState();
+  const nodes = UI.cartItems ? UI.cartItems.querySelectorAll("*").length : 0;
+  PERF.track("updateCartUI", { products: State.cart.items.length, nodes });
+  PERF.markEnd("updateCartUI", perfId);
 }
 
 function flashAddFeedback(btn) {
@@ -786,6 +1070,7 @@ export function renderCustomer() {
 
   if (UI.searchInput) UI.searchInput.value = State.filters.search || "";
   if (UI.sortSelect) UI.sortSelect.value = State.filters.sort || "relevance";
+  if (UI.storeSearchInput) UI.storeSearchInput.value = State.filters.storeSearch || "";
 
   if (!hasShownWelcome) {
     toast(`Welcome back. Deliveries active until ${State.scope.hours}.`);
@@ -796,6 +1081,7 @@ export function renderCustomer() {
   renderStoresSidebar();
   renderProductGrid();
   renderDiscoveryRows();
+  syncSectionHeights();
 
   updateCartUI();
   updateOrdersUI();
@@ -813,31 +1099,36 @@ export function bindCustomerEvents() {
   UI.searchInput?.addEventListener(
     "input",
     debounce((e) => {
+      PERF.startAction("search input");
       State.filters.search = e.target.value || "";
       saveAllState();
-      renderProductGrid();
-      renderDiscoveryRows();
+      scheduleRender({ grid: true, rows: true });
     }, 180)
   );
 
   UI.clearSearchBtn?.addEventListener("click", () => {
+    PERF.startAction("search input");
     State.filters.search = "";
     if (UI.searchInput) UI.searchInput.value = "";
     saveAllState();
-    renderProductGrid();
-    renderDiscoveryRows();
+    scheduleRender({ grid: true, rows: true });
   });
 
   // Sort
   UI.sortSelect?.addEventListener("change", (e) => {
+    PERF.startAction("sort change");
     State.filters.sort = e.target.value;
     saveAllState();
-    renderProductGrid();
-    renderDiscoveryRows();
+    scheduleRender({ grid: true, rows: true });
   });
 
   // Clicks no grid (delegação)
   UI.productGrid?.addEventListener("click", (e) => {
+    const saveBtn = e.target.closest("[data-save]");
+    if (saveBtn) {
+      toast("Saved (demo)");
+      return;
+    }
     const btn = e.target.closest("[data-add]");
     if (!btn) return;
     if (addToCart(btn.dataset.add)) {
@@ -856,24 +1147,46 @@ export function bindCustomerEvents() {
   UI.categoryList?.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-cat]");
     if (!btn) return;
+    PERF.startAction("category click");
     State.filters.category = btn.dataset.cat;
     saveAllState();
-    renderCategories();
-    renderProductGrid();
-    renderDiscoveryRows();
     applyAccentFromState();
+    scheduleRender({ sidebar: true, grid: true, rows: true });
   });
 
   // Lojas (delegação)
   UI.storeList?.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-store]");
     if (!btn) return;
+    PERF.startAction("store click");
     State.filters.store = btn.dataset.store;
     saveAllState();
-    renderStoresSidebar();
-    renderProductGrid();
-    renderDiscoveryRows();
     applyAccentFromState();
+    scheduleRender({ sidebar: true, grid: true, rows: true });
+  });
+
+  UI.storeSearchInput?.addEventListener("input", (e) => {
+    State.filters.storeSearch = e.target.value || "";
+    saveAllState();
+    scheduleRender({ sidebar: true });
+  });
+
+  UI.toggleCategories?.addEventListener("click", () => {
+    State.filters.collapseCategories = !State.filters.collapseCategories;
+    saveAllState();
+    syncSectionHeights();
+  });
+
+  UI.toggleStores?.addEventListener("click", () => {
+    State.filters.collapseStores = !State.filters.collapseStores;
+    saveAllState();
+    syncSectionHeights();
+  });
+
+  UI.toggleRules?.addEventListener("click", () => {
+    State.filters.collapseRules = !State.filters.collapseRules;
+    saveAllState();
+    syncSectionHeights();
   });
 
   // Cart open/close
@@ -955,4 +1268,5 @@ export function bindCustomerEvents() {
     toast("Métricas do piloto: veja Loja/Admin no topo.");
   });
 }
+
 

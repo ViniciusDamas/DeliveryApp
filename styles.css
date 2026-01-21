@@ -658,6 +658,82 @@ body[data-route="cliente"].has-minicart .content {
   margin-left: auto;
 }
 
+.section-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(18, 31, 59, 0.35);
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  transition: background .14s ease, border-color .14s ease, transform .06s ease;
+}
+
+.section-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+}
+
+.section-toggle:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.section-toggle__title {
+  font-weight: 950;
+  font-size: var(--text-md);
+  letter-spacing: 0.2px;
+}
+
+.section-toggle__icon {
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid rgba(255, 255, 255, 0.7);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+  transform: rotate(45deg);
+  transition: transform .2s ease;
+}
+
+.section-toggle[aria-expanded="false"] .section-toggle__icon {
+  transform: rotate(-135deg);
+}
+
+.section-toggle--card {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.section-toggle--card:hover {
+  background: transparent;
+}
+
+.section-body {
+  overflow: hidden;
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+  transition: max-height .2s ease;
+}
+
+.section-body.is-collapsed {
+  max-height: 0;
+  margin-top: 0;
+}
+
+.field--compact span {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.field--compact input {
+  padding: 8px 10px;
+  font-size: var(--text-xs);
+}
+
 .sectionhead--bare .sectionhead__title {
   position: relative;
   padding-bottom: 6px;
@@ -712,16 +788,36 @@ body[data-route="cliente"].has-minicart .content {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(160px, 200px);
-  gap: 10px;
+  gap: 12px;
   overflow-x: auto;
-  padding-bottom: 6px;
+  padding: 4px 6px 10px;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+  scroll-padding-inline: 10px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
 }
 
 .discovery__scroll::-webkit-scrollbar {
-  width: 0;
-  height: 0;
+  height: 6px;
+}
+
+.discovery__scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.discovery__scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.discovery__scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
 }
 
 .discovery-card {
@@ -734,6 +830,7 @@ body[data-route="cliente"].has-minicart .content {
   text-align: left;
   cursor: pointer;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
 
@@ -906,6 +1003,16 @@ body[data-route="cliente"].has-minicart .content {
   color: rgba(255, 255, 255, 0.92);
   cursor: pointer;
   transition: background .14s ease, border-color .14s ease, transform .06s ease;
+}
+.iconbtn--sm {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  font-size: var(--text-xs);
+}
+.iconbtn--ghost {
+  background: rgba(18, 31, 59, 0.28);
+  border-color: rgba(255, 255, 255, 0.10);
 }
 
 .iconbtn:hover {
@@ -1882,10 +1989,38 @@ body[data-route="admin"] .userbox__item--orders {
   line-height: 1.4;
 }
 
+.card__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(18, 31, 59, 0.35);
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: 0.2px;
+}
+
+.card__priceRow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 .card__content .card__price {
   font-size: var(--text-md);
   font-weight: 1000;
   margin-top: 2px;
+}
+
+.card__subline {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.4;
+  margin-top: -2px;
 }
 
 .card__content .btn {
